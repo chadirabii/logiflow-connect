@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 export default function RegisterPage() {
-  const [form, setForm] = useState({ fullName: '', email: '', company: '', phone: '', password: '', confirm: '' });
+  const [form, setForm] = useState({ fullName: '', email: '', company: '', phone: '', rne: '', patente: '', password: '', confirm: '' });
   const { register } = useAuth();
   const navigate = useNavigate();
 
