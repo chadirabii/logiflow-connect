@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import {
-  LayoutDashboard, Package, Ship, FileText, MessageSquare, Users, LogOut, ChevronLeft, ChevronRight, Settings
+  LayoutDashboard, Package, Ship, FileText, MessageSquare, Users, LogOut, ChevronLeft, ChevronRight, Settings, AlertTriangle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -13,6 +13,7 @@ const adminNav = [
   { label: 'Expéditions', icon: Ship, path: '/admin/shipments' },
   { label: 'Clients', icon: Users, path: '/admin/clients' },
   { label: 'Documents', icon: FileText, path: '/admin/documents' },
+  { label: 'Réclamations', icon: AlertTriangle, path: '/admin/reclamations' },
   { label: 'Messagerie', icon: MessageSquare, path: '/admin/chat' },
 ];
 

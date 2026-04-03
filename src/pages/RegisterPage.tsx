@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 export default function RegisterPage() {
-  const [form, setForm] = useState({ fullName: '', email: '', company: '', phone: '', password: '', confirm: '' });
+  const [form, setForm] = useState({ fullName: '', email: '', company: '', phone: '', rne: '', patente: '', password: '', confirm: '' });
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -18,7 +18,7 @@ export default function RegisterPage() {
       toast.error('Les mots de passe ne correspondent pas');
       return;
     }
-    const result = register({ email: form.email, password: form.password, fullName: form.fullName, company: form.company, phone: form.phone });
+    const result = register({ email: form.email, password: form.password, fullName: form.fullName, company: form.company, phone: form.phone, rne: form.rne, patente: form.patente });
     if (result.success) {
       toast.success('Compte créé avec succès');
       navigate('/client');
@@ -56,6 +56,14 @@ export default function RegisterPage() {
             <div>
               <Label htmlFor="phone">Téléphone</Label>
               <Input id="phone" value={form.phone} onChange={e => update('phone', e.target.value)} placeholder="+212 600 000 000" className="mt-1.5" />
+            </div>
+            <div>
+              <Label htmlFor="rne">RNE (Registre National des Entreprises) *</Label>
+              <Input id="rne" value={form.rne} onChange={e => update('rne', e.target.value)} placeholder="RNE-XXXX-XXXXXX" className="mt-1.5" required />
+            </div>
+            <div>
+              <Label htmlFor="patente">Numéro de Patente *</Label>
+              <Input id="patente" value={form.patente} onChange={e => update('patente', e.target.value)} placeholder="PAT-XXXX-XXXX" className="mt-1.5" required />
             </div>
             <div>
               <Label htmlFor="password">Mot de passe *</Label>

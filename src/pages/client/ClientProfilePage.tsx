@@ -10,6 +10,7 @@ export default function ClientProfilePage() {
   const { user } = useAuth();
   const [form, setForm] = useState({
     fullName: user?.fullName || '', email: user?.email || '', company: user?.company || '', phone: user?.phone || '',
+    rne: user?.rne || '', patente: user?.patente || '',
   });
 
   const handleSave = (e: React.FormEvent) => {
@@ -27,6 +28,8 @@ export default function ClientProfilePage() {
             <div><Label>Email</Label><Input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className="mt-1.5" /></div>
             <div><Label>Société</Label><Input value={form.company} onChange={e => setForm({ ...form, company: e.target.value })} className="mt-1.5" /></div>
             <div><Label>Téléphone</Label><Input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className="mt-1.5" /></div>
+            <div><Label>RNE</Label><Input value={form.rne} onChange={e => setForm({ ...form, rne: e.target.value })} className="mt-1.5" /></div>
+            <div><Label>Patente</Label><Input value={form.patente} onChange={e => setForm({ ...form, patente: e.target.value })} className="mt-1.5" /></div>
             <Button type="submit" className="bg-accent text-accent-foreground hover:bg-accent/90">Enregistrer</Button>
           </form>
         </div>

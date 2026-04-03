@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import {
-  LayoutDashboard, Package, Ship, FileText, MessageSquare, Plus, User, LogOut, ChevronLeft, ChevronRight, MapPin
+  LayoutDashboard, Package, Ship, FileText, MessageSquare, Plus, User, LogOut, ChevronLeft, ChevronRight, MapPin, AlertTriangle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -13,6 +13,7 @@ const clientNav = [
   { label: 'Mes commandes', icon: Package, path: '/client/orders' },
   { label: 'Suivi expéditions', icon: Ship, path: '/client/tracking' },
   { label: 'Documents', icon: FileText, path: '/client/documents' },
+  { label: 'Réclamations', icon: AlertTriangle, path: '/client/reclamations' },
   { label: 'Messagerie', icon: MessageSquare, path: '/client/chat' },
   { label: 'Mon profil', icon: User, path: '/client/profile' },
 ];

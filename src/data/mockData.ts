@@ -9,9 +9,54 @@ export interface User {
   fullName: string;
   company?: string;
   phone?: string;
+  rne?: string;
+  patente?: string;
   avatar?: string;
   createdAt: string;
 }
+
+export type ReclamationStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
+export type ReclamationPriority = 'low' | 'medium' | 'high';
+
+export interface Reclamation {
+  id: string;
+  clientId: string;
+  clientName: string;
+  bookingRef?: string;
+  subject: string;
+  description: string;
+  priority: ReclamationPriority;
+  status: ReclamationStatus;
+  adminResponse?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const RECLAMATION_STATUS_LABELS: Record<ReclamationStatus, string> = {
+  open: 'Ouverte',
+  in_progress: 'En traitement',
+  resolved: 'Résolue',
+  closed: 'Fermée',
+};
+
+export const RECLAMATION_STATUS_COLORS: Record<ReclamationStatus, string> = {
+  open: 'bg-warning/10 text-warning',
+  in_progress: 'bg-accent/10 text-accent',
+  resolved: 'bg-success/10 text-success',
+  closed: 'bg-muted text-muted-foreground',
+};
+
+export const RECLAMATION_PRIORITY_LABELS: Record<ReclamationPriority, string> = {
+  low: 'Faible',
+  medium: 'Moyenne',
+  high: 'Élevée',
+};
+
+export const RECLAMATION_PRIORITY_COLORS: Record<ReclamationPriority, string> = {
+  low: 'bg-muted text-muted-foreground',
+  medium: 'bg-warning/10 text-warning',
+  high: 'bg-destructive/10 text-destructive',
+};
 
 export interface BookingRequest {
   id: string;
@@ -191,13 +236,21 @@ export const STATUS_COLORS: Record<BookingStatus, string> = {
 
 export const users: User[] = [
   { id: 'u1', email: 'admin@247logistics.com', password: 'admin123', role: 'admin', fullName: 'Mohamed Bennani', company: '24/7 Logistics', phone: '+212 600 000 001', createdAt: '2024-01-01' },
-  { id: 'u2', email: 'karim@textilemarket.ma', password: 'client123', role: 'client', fullName: 'Karim El Fassi', company: 'Textile Market SARL', phone: '+212 600 100 001', createdAt: '2024-02-15' },
-  { id: 'u3', email: 'sophie@agroexport.fr', password: 'client123', role: 'client', fullName: 'Sophie Martin', company: 'AgroExport France', phone: '+33 6 12 34 56 78', createdAt: '2024-03-01' },
-  { id: 'u4', email: 'ahmed@casaimport.ma', password: 'client123', role: 'client', fullName: 'Ahmed Tazi', company: 'Casa Import SA', phone: '+212 600 200 002', createdAt: '2024-03-20' },
-  { id: 'u5', email: 'li.wei@shenzhentrade.cn', password: 'client123', role: 'client', fullName: 'Li Wei', company: 'Shenzhen Trade Co.', phone: '+86 138 0000 0001', createdAt: '2024-04-10' },
-  { id: 'u6', email: 'fatima@pharmalog.ma', password: 'client123', role: 'client', fullName: 'Fatima Zahra Alaoui', company: 'PharmaLog Maroc', phone: '+212 600 300 003', createdAt: '2024-05-01' },
-  { id: 'u7', email: 'jan@dutchfoods.nl', password: 'client123', role: 'client', fullName: 'Jan Van Der Berg', company: 'Dutch Foods BV', phone: '+31 6 12345678', createdAt: '2024-05-20' },
-  { id: 'u8', email: 'marco@italiaparts.it', password: 'client123', role: 'client', fullName: 'Marco Rossi', company: 'Italia Parts SRL', phone: '+39 333 1234567', createdAt: '2024-06-15' },
+  { id: 'u2', email: 'karim@textilemarket.ma', password: 'client123', role: 'client', fullName: 'Karim El Fassi', company: 'Textile Market SARL', phone: '+212 600 100 001', rne: 'RNE-2024-001234', patente: 'PAT-2024-5678', createdAt: '2024-02-15' },
+  { id: 'u3', email: 'sophie@agroexport.fr', password: 'client123', role: 'client', fullName: 'Sophie Martin', company: 'AgroExport France', phone: '+33 6 12 34 56 78', rne: 'RNE-2024-002345', patente: 'PAT-2024-6789', createdAt: '2024-03-01' },
+  { id: 'u4', email: 'ahmed@casaimport.ma', password: 'client123', role: 'client', fullName: 'Ahmed Tazi', company: 'Casa Import SA', phone: '+212 600 200 002', rne: 'RNE-2024-003456', patente: 'PAT-2024-7890', createdAt: '2024-03-20' },
+  { id: 'u5', email: 'li.wei@shenzhentrade.cn', password: 'client123', role: 'client', fullName: 'Li Wei', company: 'Shenzhen Trade Co.', phone: '+86 138 0000 0001', rne: 'RNE-2024-004567', patente: 'PAT-2024-8901', createdAt: '2024-04-10' },
+  { id: 'u6', email: 'fatima@pharmalog.ma', password: 'client123', role: 'client', fullName: 'Fatima Zahra Alaoui', company: 'PharmaLog Maroc', phone: '+212 600 300 003', rne: 'RNE-2024-005678', patente: 'PAT-2024-9012', createdAt: '2024-05-01' },
+  { id: 'u7', email: 'jan@dutchfoods.nl', password: 'client123', role: 'client', fullName: 'Jan Van Der Berg', company: 'Dutch Foods BV', phone: '+31 6 12345678', rne: 'RNE-2024-006789', patente: 'PAT-2024-0123', createdAt: '2024-05-20' },
+  { id: 'u8', email: 'marco@italiaparts.it', password: 'client123', role: 'client', fullName: 'Marco Rossi', company: 'Italia Parts SRL', phone: '+39 333 1234567', rne: 'RNE-2024-007890', patente: 'PAT-2024-1234', createdAt: '2024-06-15' },
+];
+
+export const reclamations: Reclamation[] = [
+  { id: 'r1', clientId: 'u2', clientName: 'Karim El Fassi', bookingRef: 'BK-2024-0001', subject: 'Retard de livraison', description: 'Ma livraison prévue pour le 5 septembre n\'est toujours pas arrivée. Je demande des explications sur ce retard.', priority: 'high', status: 'in_progress', adminResponse: 'Nous avons vérifié et le navire a subi un retard de 3 jours au Canal de Suez. Nouvelle ETA : 8 septembre.', createdAt: '2024-09-06', updatedAt: '2024-09-07' },
+  { id: 'r2', clientId: 'u3', clientName: 'Sophie Martin', bookingRef: 'BK-2024-0002', subject: 'Marchandise endommagée', description: 'Plusieurs caisses de produits agricoles sont arrivées endommagées. Photos jointes à la conversation.', priority: 'high', status: 'resolved', adminResponse: 'Nous avons ouvert un dossier d\'assurance. Remboursement prévu sous 15 jours ouvrables.', createdAt: '2024-09-22', updatedAt: '2024-10-01' },
+  { id: 'r3', clientId: 'u4', clientName: 'Ahmed Tazi', bookingRef: 'BK-2024-0003', subject: 'Erreur sur la facture', description: 'Le montant facturé ne correspond pas au devis initial. Il y a une différence de 500€.', priority: 'medium', status: 'open', createdAt: '2024-10-02', updatedAt: '2024-10-02' },
+  { id: 'r4', clientId: 'u6', clientName: 'Fatima Zahra Alaoui', subject: 'Problème de température', description: 'Le conteneur reefer n\'a pas maintenu la température requise de 2-8°C pendant le transit.', priority: 'high', status: 'open', createdAt: '2024-10-05', updatedAt: '2024-10-05' },
+  { id: 'r5', clientId: 'u7', clientName: 'Jan Van Der Berg', bookingRef: 'BK-2024-0006', subject: 'Documents manquants', description: 'Je n\'ai toujours pas reçu le connaissement maritime pour ma commande.', priority: 'low', status: 'closed', adminResponse: 'Le document a été envoyé par email et ajouté à votre espace documents.', createdAt: '2024-10-08', updatedAt: '2024-10-10' },
 ];
 
 export const bookingRequests: BookingRequest[] = [

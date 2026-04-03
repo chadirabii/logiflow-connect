@@ -16,12 +16,14 @@ import ClientTrackingPage from "./pages/client/ClientTrackingPage";
 import ClientDocumentsPage from "./pages/client/ClientDocumentsPage";
 import ClientChatPage from "./pages/client/ClientChatPage";
 import ClientProfilePage from "./pages/client/ClientProfilePage";
+import ClientReclamationsPage from "./pages/client/ClientReclamationsPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminRequestsPage from "./pages/admin/AdminRequestsPage";
 import AdminShipmentsPage from "./pages/admin/AdminShipmentsPage";
 import AdminClientsPage from "./pages/admin/AdminClientsPage";
 import AdminDocumentsPage from "./pages/admin/AdminDocumentsPage";
 import AdminChatPage from "./pages/admin/AdminChatPage";
+import AdminReclamationsPage from "./pages/admin/AdminReclamationsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -54,6 +56,7 @@ const App = () => (
             <Route path="/client/documents" element={<ProtectedRoute role="client"><ClientDocumentsPage /></ProtectedRoute>} />
             <Route path="/client/chat" element={<ProtectedRoute role="client"><ClientChatPage /></ProtectedRoute>} />
             <Route path="/client/profile" element={<ProtectedRoute role="client"><ClientProfilePage /></ProtectedRoute>} />
+            <Route path="/client/reclamations" element={<ProtectedRoute role="client"><ClientReclamationsPage /></ProtectedRoute>} />
 
             <Route path="/admin" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
             <Route path="/admin/requests" element={<ProtectedRoute role="admin"><AdminRequestsPage /></ProtectedRoute>} />
@@ -61,6 +64,7 @@ const App = () => (
             <Route path="/admin/clients" element={<ProtectedRoute role="admin"><AdminClientsPage /></ProtectedRoute>} />
             <Route path="/admin/documents" element={<ProtectedRoute role="admin"><AdminDocumentsPage /></ProtectedRoute>} />
             <Route path="/admin/chat" element={<ProtectedRoute role="admin"><AdminChatPage /></ProtectedRoute>} />
+            <Route path="/admin/reclamations" element={<ProtectedRoute role="admin"><AdminReclamationsPage /></ProtectedRoute>} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>
