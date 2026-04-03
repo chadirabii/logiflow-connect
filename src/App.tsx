@@ -23,6 +23,7 @@ import AdminShipmentsPage from "./pages/admin/AdminShipmentsPage";
 import AdminClientsPage from "./pages/admin/AdminClientsPage";
 import AdminDocumentsPage from "./pages/admin/AdminDocumentsPage";
 import AdminChatPage from "./pages/admin/AdminChatPage";
+import AdminReclamationsPage from "./pages/admin/AdminReclamationsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
