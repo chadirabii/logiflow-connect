@@ -9,9 +9,54 @@ export interface User {
   fullName: string;
   company?: string;
   phone?: string;
+  rne?: string;
+  patente?: string;
   avatar?: string;
   createdAt: string;
 }
+
+export type ReclamationStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
+export type ReclamationPriority = 'low' | 'medium' | 'high';
+
+export interface Reclamation {
+  id: string;
+  clientId: string;
+  clientName: string;
+  bookingRef?: string;
+  subject: string;
+  description: string;
+  priority: ReclamationPriority;
+  status: ReclamationStatus;
+  adminResponse?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const RECLAMATION_STATUS_LABELS: Record<ReclamationStatus, string> = {
+  open: 'Ouverte',
+  in_progress: 'En traitement',
+  resolved: 'Résolue',
+  closed: 'Fermée',
+};
+
+export const RECLAMATION_STATUS_COLORS: Record<ReclamationStatus, string> = {
+  open: 'bg-warning/10 text-warning',
+  in_progress: 'bg-accent/10 text-accent',
+  resolved: 'bg-success/10 text-success',
+  closed: 'bg-muted text-muted-foreground',
+};
+
+export const RECLAMATION_PRIORITY_LABELS: Record<ReclamationPriority, string> = {
+  low: 'Faible',
+  medium: 'Moyenne',
+  high: 'Élevée',
+};
+
+export const RECLAMATION_PRIORITY_COLORS: Record<ReclamationPriority, string> = {
+  low: 'bg-muted text-muted-foreground',
+  medium: 'bg-warning/10 text-warning',
+  high: 'bg-destructive/10 text-destructive',
+};
 
 export interface BookingRequest {
   id: string;
