@@ -13,6 +13,7 @@ const adminNav = [
   { label: 'Expéditions', icon: Ship, path: '/admin/shipments' },
   { label: 'Clients', icon: Users, path: '/admin/clients' },
   { label: 'Documents', icon: FileText, path: '/admin/documents' },
+  { label: 'Réclamations', icon: AlertTriangle, path: '/admin/reclamations' },
   { label: 'Messagerie', icon: MessageSquare, path: '/admin/chat' },
 ];
 
