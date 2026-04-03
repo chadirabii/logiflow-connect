@@ -10,6 +10,7 @@ export default function ClientProfilePage() {
   const { user } = useAuth();
   const [form, setForm] = useState({
     fullName: user?.fullName || '', email: user?.email || '', company: user?.company || '', phone: user?.phone || '',
+    rne: user?.rne || '', patente: user?.patente || '',
   });
 
   const handleSave = (e: React.FormEvent) => {
