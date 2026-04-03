@@ -58,6 +58,14 @@ export default function RegisterPage() {
               <Input id="phone" value={form.phone} onChange={e => update('phone', e.target.value)} placeholder="+212 600 000 000" className="mt-1.5" />
             </div>
             <div>
+              <Label htmlFor="rne">RNE (Registre National des Entreprises) *</Label>
+              <Input id="rne" value={form.rne} onChange={e => update('rne', e.target.value)} placeholder="RNE-XXXX-XXXXXX" className="mt-1.5" required />
+            </div>
+            <div>
+              <Label htmlFor="patente">Numéro de Patente *</Label>
+              <Input id="patente" value={form.patente} onChange={e => update('patente', e.target.value)} placeholder="PAT-XXXX-XXXX" className="mt-1.5" required />
+            </div>
+            <div>
               <Label htmlFor="password">Mot de passe *</Label>
               <Input id="password" type="password" value={form.password} onChange={e => update('password', e.target.value)} placeholder="••••••••" className="mt-1.5" required />
             </div>

@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { success: false, error: 'Email ou mot de passe incorrect' };
   }, []);
 
-  const register = useCallback((data: { email: string; password: string; fullName: string; company?: string; phone?: string }) => {
+  const register = useCallback((data: { email: string; password: string; fullName: string; company?: string; phone?: string; rne?: string; patente?: string }) => {
     if (users.find(u => u.email === data.email)) {
       return { success: false, error: 'Cet email est déjà utilisé' };
     }
@@ -41,6 +41,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       fullName: data.fullName,
       company: data.company,
       phone: data.phone,
+      rne: data.rne,
+      patente: data.patente,
       createdAt: new Date().toISOString().split('T')[0],
     };
     users.push(newUser);
