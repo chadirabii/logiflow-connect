@@ -18,7 +18,7 @@ export default function RegisterPage() {
       toast.error('Les mots de passe ne correspondent pas');
       return;
     }
-    const result = register({ email: form.email, password: form.password, fullName: form.fullName, company: form.company, phone: form.phone });
+    const result = register({ email: form.email, password: form.password, fullName: form.fullName, company: form.company, phone: form.phone, rne: form.rne, patente: form.patente });
     if (result.success) {
       toast.success('Compte créé avec succès');
       navigate('/client');
