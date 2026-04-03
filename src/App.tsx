@@ -16,6 +16,7 @@ import ClientTrackingPage from "./pages/client/ClientTrackingPage";
 import ClientDocumentsPage from "./pages/client/ClientDocumentsPage";
 import ClientChatPage from "./pages/client/ClientChatPage";
 import ClientProfilePage from "./pages/client/ClientProfilePage";
+import ClientReclamationsPage from "./pages/client/ClientReclamationsPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminRequestsPage from "./pages/admin/AdminRequestsPage";
 import AdminShipmentsPage from "./pages/admin/AdminShipmentsPage";
