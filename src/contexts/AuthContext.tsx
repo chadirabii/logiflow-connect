@@ -4,7 +4,7 @@ import { users, type User, type UserRole } from '@/data/mockData';
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => { success: boolean; error?: string };
-  register: (data: { email: string; password: string; fullName: string; company?: string; phone?: string }) => { success: boolean; error?: string };
+  register: (data: { email: string; password: string; fullName: string; company?: string; phone?: string; rne?: string; patente?: string }) => { success: boolean; error?: string };
   logout: () => void;
   isAuthenticated: boolean;
   isAdmin: boolean;
