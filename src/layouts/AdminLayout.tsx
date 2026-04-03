@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import {
-  LayoutDashboard, Package, Ship, FileText, MessageSquare, Users, LogOut, ChevronLeft, ChevronRight, Settings
+  LayoutDashboard, Package, Ship, FileText, MessageSquare, Users, LogOut, ChevronLeft, ChevronRight, Settings, AlertTriangle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
