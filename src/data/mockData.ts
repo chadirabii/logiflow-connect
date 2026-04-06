@@ -290,9 +290,9 @@ export const trackingEvents: TrackingEvent[] = [
   { id: 'te5', shipmentId: 's1', status: 'in_transit', location: 'Mer Rouge', description: 'Passage Canal de Suez prévu', timestamp: '2024-08-25T09:00:00' },
   { id: 'te6', shipmentId: 's1', status: 'in_transit', location: 'Mer Méditerranée', description: 'En transit - Mer Méditerranée', timestamp: '2024-08-28T12:00:00' },
   // Shipment 2 (delivered)
-  { id: 'te7', shipmentId: 's2', status: 'submitted', location: 'Casablanca, Maroc', port: 'Port de Casablanca', description: 'Demande soumise', timestamp: '2024-08-05T09:00:00' },
-  { id: 'te8', shipmentId: 's2', status: 'confirmed', location: 'Casablanca, Maroc', port: 'Port de Casablanca', description: 'Conteneur reefer chargé', timestamp: '2024-08-20T07:00:00' },
-  { id: 'te9', shipmentId: 's2', status: 'in_transit', location: 'Détroit de Gibraltar', description: 'En transit', timestamp: '2024-08-22T15:00:00' },
+  { id: 'te7', shipmentId: 's2', status: 'submitted', location: 'Sfax, Tunisie', port: 'Port de Sfax', description: 'Demande soumise', timestamp: '2024-08-05T09:00:00' },
+  { id: 'te8', shipmentId: 's2', status: 'confirmed', location: 'Sfax, Tunisie', port: 'Port de Sfax', description: 'Conteneur chargé', timestamp: '2024-08-20T07:00:00' },
+  { id: 'te9', shipmentId: 's2', status: 'in_transit', location: 'Canal de Sicile', description: 'En transit', timestamp: '2024-08-22T15:00:00' },
   { id: 'te10', shipmentId: 's2', status: 'arrived_port', location: 'Marseille, France', port: 'Port de Marseille', description: 'Arrivée au port de Marseille', timestamp: '2024-09-15T06:00:00' },
   { id: 'te11', shipmentId: 's2', status: 'customs', location: 'Marseille, France', port: 'Port de Marseille', description: 'Dédouanement en cours', timestamp: '2024-09-16T10:00:00' },
   { id: 'te12', shipmentId: 's2', status: 'delivered', location: 'Marseille, France', description: 'Marchandise livrée', timestamp: '2024-09-20T14:00:00' },
@@ -302,22 +302,22 @@ export const trackingEvents: TrackingEvent[] = [
   { id: 'te15', shipmentId: 's4', status: 'in_transit', location: 'Mer de Chine', description: 'Départ de Shanghai', timestamp: '2024-09-16T18:00:00' },
   { id: 'te16', shipmentId: 's4', status: 'in_transit', location: 'Canal de Suez', description: 'Passage du Canal de Suez', timestamp: '2024-09-28T07:00:00' },
   // Shipment 5
-  { id: 'te17', shipmentId: 's5', status: 'submitted', location: 'Casablanca, Maroc', port: 'Port de Casablanca', description: 'Demande soumise', timestamp: '2024-10-25T09:00:00' },
-  { id: 'te18', shipmentId: 's5', status: 'in_transit', location: 'Atlantique', description: 'En transit vers Anvers', timestamp: '2024-11-05T12:00:00' },
-  { id: 'te19', shipmentId: 's5', status: 'arrived_port', location: 'Anvers, Belgique', port: 'Port d\'Anvers', description: 'Arrivée au port d\'Anvers', timestamp: '2024-11-15T06:00:00' },
-  { id: 'te20', shipmentId: 's5', status: 'customs', location: 'Anvers, Belgique', port: 'Port d\'Anvers', description: 'En cours de dédouanement', timestamp: '2024-11-18T10:00:00' },
+  { id: 'te17', shipmentId: 's5', status: 'submitted', location: 'Sfax, Tunisie', port: 'Port de Sfax', description: 'Demande soumise', timestamp: '2024-10-25T09:00:00' },
+  { id: 'te18', shipmentId: 's5', status: 'in_transit', location: 'Mer Méditerranée', description: 'En transit vers Gênes', timestamp: '2024-11-05T12:00:00' },
+  { id: 'te19', shipmentId: 's5', status: 'arrived_port', location: 'Gênes, Italie', port: 'Port de Gênes', description: 'Arrivée au port de Gênes', timestamp: '2024-11-15T06:00:00' },
+  { id: 'te20', shipmentId: 's5', status: 'customs', location: 'Gênes, Italie', port: 'Port de Gênes', description: 'En cours de dédouanement', timestamp: '2024-11-18T10:00:00' },
   // Shipment 6
   { id: 'te21', shipmentId: 's6', status: 'confirmed', location: 'Barcelone, Espagne', port: 'Port de Barcelone', description: 'Chargement effectué', timestamp: '2024-11-10T08:00:00' },
   { id: 'te22', shipmentId: 's6', status: 'in_transit', location: 'Mer Méditerranée', description: 'En transit', timestamp: '2024-11-12T14:00:00' },
-  { id: 'te23', shipmentId: 's6', status: 'arrived_port', location: 'Tanger, Maroc', port: 'Tanger Med', description: 'Arrivée à Tanger Med', timestamp: '2024-11-28T06:00:00' },
+  { id: 'te23', shipmentId: 's6', status: 'arrived_port', location: 'La Goulette, Tunisie', port: 'Port de La Goulette', description: 'Arrivée à La Goulette', timestamp: '2024-11-28T06:00:00' },
   // Shipment 7
   { id: 'te24', shipmentId: 's7', status: 'confirmed', location: 'Shanghai, Chine', port: 'Port de Shanghai', description: 'Conteneur chargé', timestamp: '2024-11-20T10:00:00' },
   { id: 'te25', shipmentId: 's7', status: 'in_transit', location: 'Océan Indien', description: 'En transit', timestamp: '2024-11-28T08:00:00' },
   { id: 'te26', shipmentId: 's7', status: 'arrived_port', location: 'Dubaï, EAU', port: 'Port de Jebel Ali', description: 'Arrivée à Jebel Ali', timestamp: '2024-12-05T06:00:00' },
   { id: 'te27', shipmentId: 's7', status: 'delivering', location: 'Dubaï, EAU', description: 'En cours de livraison finale', timestamp: '2024-12-08T09:00:00' },
   // Shipment 8
-  { id: 'te28', shipmentId: 's8', status: 'confirmed', location: 'Singapour', port: 'Port de Singapour', description: 'Conteneur reefer chargé', timestamp: '2024-12-01T07:00:00' },
-  { id: 'te29', shipmentId: 's8', status: 'in_transit', location: 'Océan Indien', description: 'En transit vers Casablanca', timestamp: '2024-12-05T12:00:00' },
+  { id: 'te28', shipmentId: 's8', status: 'confirmed', location: 'Gênes, Italie', port: 'Port de Gênes', description: 'Conteneur chargé', timestamp: '2024-12-01T07:00:00' },
+  { id: 'te29', shipmentId: 's8', status: 'in_transit', location: 'Mer Méditerranée', description: 'En transit vers Radès', timestamp: '2024-12-05T12:00:00' },
 ];
 
 export const documents: Document[] = [
