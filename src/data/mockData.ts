@@ -236,13 +236,13 @@ export const STATUS_COLORS: Record<BookingStatus, string> = {
 // ============= MOCK DATA =============
 
 export const users: User[] = [
-  { id: 'u1', email: 'admin@247logistics.com', password: 'admin123', role: 'admin', fullName: 'Mohamed Bennani', company: '24/7 Logistics', phone: '+212 600 000 001', createdAt: '2024-01-01' },
-  { id: 'u9', email: 'manager@247logistics.com', password: 'manager123', role: 'manager', fullName: 'Youssef Amrani', company: '24/7 Logistics', phone: '+212 600 000 010', createdAt: '2024-01-15' },
-  { id: 'u2', email: 'karim@textilemarket.ma', password: 'client123', role: 'client', fullName: 'Karim El Fassi', company: 'Textile Market SARL', phone: '+212 600 100 001', rneFile: 'rne_karim.pdf', patenteFile: 'patente_karim.pdf', createdAt: '2024-02-15' },
+  { id: 'u1', email: 'admin@247logistics.com', password: 'admin123', role: 'admin', fullName: 'Mohamed Ben Ali', company: '24/7 Logistics', phone: '+216 70 000 001', createdAt: '2024-01-01' },
+  { id: 'u9', email: 'manager@247logistics.com', password: 'manager123', role: 'manager', fullName: 'Youssef Trabelsi', company: '24/7 Logistics', phone: '+216 70 000 010', createdAt: '2024-01-15' },
+  { id: 'u2', email: 'karim@textilemarket.tn', password: 'client123', role: 'client', fullName: 'Karim Chaabane', company: 'Textile Market SARL', phone: '+216 20 100 001', rneFile: 'rne_karim.pdf', patenteFile: 'patente_karim.pdf', createdAt: '2024-02-15' },
   { id: 'u3', email: 'sophie@agroexport.fr', password: 'client123', role: 'client', fullName: 'Sophie Martin', company: 'AgroExport France', phone: '+33 6 12 34 56 78', rneFile: 'rne_sophie.pdf', patenteFile: 'patente_sophie.pdf', createdAt: '2024-03-01' },
-  { id: 'u4', email: 'ahmed@casaimport.ma', password: 'client123', role: 'client', fullName: 'Ahmed Tazi', company: 'Casa Import SA', phone: '+212 600 200 002', rneFile: 'rne_ahmed.pdf', patenteFile: 'patente_ahmed.pdf', createdAt: '2024-03-20' },
+  { id: 'u4', email: 'ahmed@tunisimport.tn', password: 'client123', role: 'client', fullName: 'Ahmed Bouzid', company: 'Tunis Import SA', phone: '+216 20 200 002', rneFile: 'rne_ahmed.pdf', patenteFile: 'patente_ahmed.pdf', createdAt: '2024-03-20' },
   { id: 'u5', email: 'li.wei@shenzhentrade.cn', password: 'client123', role: 'client', fullName: 'Li Wei', company: 'Shenzhen Trade Co.', phone: '+86 138 0000 0001', rneFile: 'rne_li.pdf', patenteFile: 'patente_li.pdf', createdAt: '2024-04-10' },
-  { id: 'u6', email: 'fatima@pharmalog.ma', password: 'client123', role: 'client', fullName: 'Fatima Zahra Alaoui', company: 'PharmaLog Maroc', phone: '+212 600 300 003', rneFile: 'rne_fatima.pdf', patenteFile: 'patente_fatima.pdf', createdAt: '2024-05-01' },
+  { id: 'u6', email: 'fatima@pharmalog.tn', password: 'client123', role: 'client', fullName: 'Fatima Zahra Mejri', company: 'PharmaLog Tunisie', phone: '+216 20 300 003', rneFile: 'rne_fatima.pdf', patenteFile: 'patente_fatima.pdf', createdAt: '2024-05-01' },
   { id: 'u7', email: 'jan@dutchfoods.nl', password: 'client123', role: 'client', fullName: 'Jan Van Der Berg', company: 'Dutch Foods BV', phone: '+31 6 12345678', rneFile: 'rne_jan.pdf', patenteFile: 'patente_jan.pdf', createdAt: '2024-05-20' },
   { id: 'u8', email: 'marco@italiaparts.it', password: 'client123', role: 'client', fullName: 'Marco Rossi', company: 'Italia Parts SRL', phone: '+39 333 1234567', rneFile: 'rne_marco.pdf', patenteFile: 'patente_marco.pdf', createdAt: '2024-06-15' },
 ];
