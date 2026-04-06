@@ -4,11 +4,12 @@ import { users, type User, type UserRole } from '@/data/mockData';
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => { success: boolean; error?: string };
-  register: (data: { email: string; password: string; fullName: string; company?: string; phone?: string; rne?: string; patente?: string }) => { success: boolean; error?: string };
+  register: (data: { email: string; password: string; fullName: string; company?: string; phone?: string; rneFile?: string; patenteFile?: string }) => { success: boolean; error?: string };
   logout: () => void;
   isAuthenticated: boolean;
   isAdmin: boolean;
   isClient: boolean;
+  isManager: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,7 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { success: false, error: 'Email ou mot de passe incorrect' };
   }, []);
 
-  const register = useCallback((data: { email: string; password: string; fullName: string; company?: string; phone?: string; rne?: string; patente?: string }) => {
+  const register = useCallback((data: { email: string; password: string; fullName: string; company?: string; phone?: string; rneFile?: string; patenteFile?: string }) => {
     if (users.find(u => u.email === data.email)) {
       return { success: false, error: 'Cet email est déjà utilisé' };
     }
@@ -41,8 +42,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       fullName: data.fullName,
       company: data.company,
       phone: data.phone,
-      rne: data.rne,
-      patente: data.patente,
+      rneFile: data.rneFile,
+      patenteFile: data.patenteFile,
       createdAt: new Date().toISOString().split('T')[0],
     };
     users.push(newUser);
@@ -65,6 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isAuthenticated: !!user,
       isAdmin: user?.role === 'admin',
       isClient: user?.role === 'client',
+      isManager: user?.role === 'manager',
     }}>
       {children}
     </AuthContext.Provider>
