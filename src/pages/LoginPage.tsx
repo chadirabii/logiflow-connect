@@ -58,7 +58,8 @@ export default function LoginPage() {
           <div className="mt-8 p-4 rounded-lg bg-muted border border-border">
             <p className="text-xs font-medium text-muted-foreground mb-2">Comptes de démonstration :</p>
             <p className="text-xs text-muted-foreground"><strong>Admin :</strong> admin@247logistics.com / admin123</p>
-            <p className="text-xs text-muted-foreground"><strong>Client :</strong> karim@textilemarket.ma / client123</p>
+            <p className="text-xs text-muted-foreground"><strong>Manager :</strong> manager@247logistics.com / manager123</p>
+            <p className="text-xs text-muted-foreground"><strong>Client :</strong> karim@textilemarket.tn / client123</p>
           </div>
         </div>
       </div>
