@@ -9,8 +9,8 @@ export interface User {
   fullName: string;
   company?: string;
   phone?: string;
-  rne?: string;
-  patente?: string;
+  rneFile?: string;
+  patenteFile?: string;
   avatar?: string;
   createdAt: string;
 }
