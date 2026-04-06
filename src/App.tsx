@@ -24,9 +24,12 @@ import AdminClientsPage from "./pages/admin/AdminClientsPage";
 import AdminDocumentsPage from "./pages/admin/AdminDocumentsPage";
 import AdminChatPage from "./pages/admin/AdminChatPage";
 import AdminReclamationsPage from "./pages/admin/AdminReclamationsPage";
+import AdminLegacyOrdersPage from "./pages/admin/AdminLegacyOrdersPage";
 import ManagerDashboard from "./pages/manager/ManagerDashboard";
 import ManagerOrdersPage from "./pages/manager/ManagerOrdersPage";
 import ManagerReclamationsPage from "./pages/manager/ManagerReclamationsPage";
+import ManagerChatPage from "./pages/manager/ManagerChatPage";
+import ManagerLegacyOrdersPage from "./pages/manager/ManagerLegacyOrdersPage";
 import ManagerStatsPage from "./pages/manager/ManagerStatsPage";
 import NotFound from "./pages/NotFound";
 
@@ -72,10 +75,13 @@ const App = () => (
             <Route path="/admin/documents" element={<ProtectedRoute role="admin"><AdminDocumentsPage /></ProtectedRoute>} />
             <Route path="/admin/chat" element={<ProtectedRoute role="admin"><AdminChatPage /></ProtectedRoute>} />
             <Route path="/admin/reclamations" element={<ProtectedRoute role="admin"><AdminReclamationsPage /></ProtectedRoute>} />
+            <Route path="/admin/legacy-orders" element={<ProtectedRoute role="admin"><AdminLegacyOrdersPage /></ProtectedRoute>} />
 
             <Route path="/manager" element={<ProtectedRoute role="manager"><ManagerDashboard /></ProtectedRoute>} />
             <Route path="/manager/orders" element={<ProtectedRoute role="manager"><ManagerOrdersPage /></ProtectedRoute>} />
             <Route path="/manager/reclamations" element={<ProtectedRoute role="manager"><ManagerReclamationsPage /></ProtectedRoute>} />
+            <Route path="/manager/chat" element={<ProtectedRoute role="manager"><ManagerChatPage /></ProtectedRoute>} />
+            <Route path="/manager/legacy-orders" element={<ProtectedRoute role="manager"><ManagerLegacyOrdersPage /></ProtectedRoute>} />
             <Route path="/manager/stats" element={<ProtectedRoute role="manager"><ManagerStatsPage /></ProtectedRoute>} />
 
             <Route path="*" element={<NotFound />} />

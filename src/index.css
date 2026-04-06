@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap");
 
 @layer base {
   :root {
@@ -54,12 +54,25 @@
     --sidebar-border: 220 30% 20%;
     --sidebar-ring: 199 89% 48%;
 
-    --font-heading: 'Space Grotesk', sans-serif;
-    --font-body: 'Plus Jakarta Sans', sans-serif;
+    --font-heading: "Space Grotesk", sans-serif;
+    --font-body: "Plus Jakarta Sans", sans-serif;
 
-    --gradient-hero: linear-gradient(135deg, hsl(215, 80%, 22%) 0%, hsl(220, 40%, 13%) 50%, hsl(199, 89%, 28%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(199, 89%, 48%) 0%, hsl(215, 80%, 42%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0, 0%, 100%) 0%, hsl(210, 20%, 98%) 100%);
+    --gradient-hero: linear-gradient(
+      135deg,
+      hsl(215, 80%, 22%) 0%,
+      hsl(220, 40%, 13%) 50%,
+      hsl(199, 89%, 28%) 100%
+    );
+    --gradient-accent: linear-gradient(
+      135deg,
+      hsl(199, 89%, 48%) 0%,
+      hsl(215, 80%, 42%) 100%
+    );
+    --gradient-card: linear-gradient(
+      180deg,
+      hsl(0, 0%, 100%) 0%,
+      hsl(210, 20%, 98%) 100%
+    );
   }
 
   .dark {
@@ -103,7 +116,12 @@
     font-family: var(--font-body);
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-heading);
   }
 }
