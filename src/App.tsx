@@ -24,14 +24,21 @@ import AdminClientsPage from "./pages/admin/AdminClientsPage";
 import AdminDocumentsPage from "./pages/admin/AdminDocumentsPage";
 import AdminChatPage from "./pages/admin/AdminChatPage";
 import AdminReclamationsPage from "./pages/admin/AdminReclamationsPage";
+import ManagerDashboard from "./pages/manager/ManagerDashboard";
+import ManagerOrdersPage from "./pages/manager/ManagerOrdersPage";
+import ManagerReclamationsPage from "./pages/manager/ManagerReclamationsPage";
+import ManagerStatsPage from "./pages/manager/ManagerStatsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-function ProtectedRoute({ children, role }: { children: React.ReactNode; role: 'client' | 'admin' }) {
+function ProtectedRoute({ children, role }: { children: React.ReactNode; role: 'client' | 'admin' | 'manager' }) {
   const { isAuthenticated, user } = useAuth();
   if (!isAuthenticated) return <Navigate to="/login" />;
-  if (user?.role !== role) return <Navigate to={user?.role === 'admin' ? '/admin' : '/client'} />;
+  if (user?.role !== role) {
+    const redirectMap = { admin: '/admin', client: '/client', manager: '/manager' };
+    return <Navigate to={redirectMap[user?.role || 'client'] || '/client'} />;
+  }
   return <>{children}</>;
 }
 
@@ -65,6 +72,11 @@ const App = () => (
             <Route path="/admin/documents" element={<ProtectedRoute role="admin"><AdminDocumentsPage /></ProtectedRoute>} />
             <Route path="/admin/chat" element={<ProtectedRoute role="admin"><AdminChatPage /></ProtectedRoute>} />
             <Route path="/admin/reclamations" element={<ProtectedRoute role="admin"><AdminReclamationsPage /></ProtectedRoute>} />
+
+            <Route path="/manager" element={<ProtectedRoute role="manager"><ManagerDashboard /></ProtectedRoute>} />
+            <Route path="/manager/orders" element={<ProtectedRoute role="manager"><ManagerOrdersPage /></ProtectedRoute>} />
+            <Route path="/manager/reclamations" element={<ProtectedRoute role="manager"><ManagerReclamationsPage /></ProtectedRoute>} />
+            <Route path="/manager/stats" element={<ProtectedRoute role="manager"><ManagerStatsPage /></ProtectedRoute>} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>

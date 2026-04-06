@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Ship } from 'lucide-react';
+import { Ship, Upload, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,7 +8,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 export default function RegisterPage() {
-  const [form, setForm] = useState({ fullName: '', email: '', company: '', phone: '', rne: '', patente: '', password: '', confirm: '' });
+  const [form, setForm] = useState({ fullName: '', email: '', company: '', phone: '', password: '', confirm: '' });
+  const [rneFile, setRneFile] = useState<File | null>(null);
+  const [patenteFile, setPatenteFile] = useState<File | null>(null);
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -18,7 +20,23 @@ export default function RegisterPage() {
       toast.error('Les mots de passe ne correspondent pas');
       return;
     }
-    const result = register({ email: form.email, password: form.password, fullName: form.fullName, company: form.company, phone: form.phone, rne: form.rne, patente: form.patente });
+    if (!rneFile) {
+      toast.error('Veuillez téléverser votre document RNE');
+      return;
+    }
+    if (!patenteFile) {
+      toast.error('Veuillez téléverser votre document Patente');
+      return;
+    }
+    const result = register({
+      email: form.email,
+      password: form.password,
+      fullName: form.fullName,
+      company: form.company,
+      phone: form.phone,
+      rneFile: rneFile.name,
+      patenteFile: patenteFile.name,
+    });
     if (result.success) {
       toast.success('Compte créé avec succès');
       navigate('/client');
@@ -57,14 +75,65 @@ export default function RegisterPage() {
               <Label htmlFor="phone">Téléphone</Label>
               <Input id="phone" value={form.phone} onChange={e => update('phone', e.target.value)} placeholder="+212 600 000 000" className="mt-1.5" />
             </div>
+
+            {/* RNE File Upload */}
             <div>
-              <Label htmlFor="rne">RNE (Registre National des Entreprises) *</Label>
-              <Input id="rne" value={form.rne} onChange={e => update('rne', e.target.value)} placeholder="RNE-XXXX-XXXXXX" className="mt-1.5" required />
+              <Label>Document RNE (Registre National des Entreprises) *</Label>
+              <label
+                htmlFor="rneFile"
+                className="mt-1.5 flex items-center gap-3 p-3 rounded-lg border border-border bg-muted/30 cursor-pointer hover:bg-muted/60 transition-colors"
+              >
+                {rneFile ? (
+                  <>
+                    <CheckCircle className="h-5 w-5 text-success flex-shrink-0" />
+                    <span className="text-sm text-foreground truncate">{rneFile.name}</span>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                    <span className="text-sm text-muted-foreground">Cliquez pour téléverser le fichier RNE</span>
+                  </>
+                )}
+                <input
+                  id="rneFile"
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  className="hidden"
+                  onChange={e => setRneFile(e.target.files?.[0] || null)}
+                />
+              </label>
+              <p className="text-xs text-muted-foreground mt-1">Formats acceptés : PDF, JPG, PNG</p>
             </div>
+
+            {/* Patente File Upload */}
             <div>
-              <Label htmlFor="patente">Numéro de Patente *</Label>
-              <Input id="patente" value={form.patente} onChange={e => update('patente', e.target.value)} placeholder="PAT-XXXX-XXXX" className="mt-1.5" required />
+              <Label>Document Patente *</Label>
+              <label
+                htmlFor="patenteFile"
+                className="mt-1.5 flex items-center gap-3 p-3 rounded-lg border border-border bg-muted/30 cursor-pointer hover:bg-muted/60 transition-colors"
+              >
+                {patenteFile ? (
+                  <>
+                    <CheckCircle className="h-5 w-5 text-success flex-shrink-0" />
+                    <span className="text-sm text-foreground truncate">{patenteFile.name}</span>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                    <span className="text-sm text-muted-foreground">Cliquez pour téléverser le fichier Patente</span>
+                  </>
+                )}
+                <input
+                  id="patenteFile"
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  className="hidden"
+                  onChange={e => setPatenteFile(e.target.files?.[0] || null)}
+                />
+              </label>
+              <p className="text-xs text-muted-foreground mt-1">Formats acceptés : PDF, JPG, PNG</p>
             </div>
+
             <div>
               <Label htmlFor="password">Mot de passe *</Label>
               <Input id="password" type="password" value={form.password} onChange={e => update('password', e.target.value)} placeholder="••••••••" className="mt-1.5" required />
