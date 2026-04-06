@@ -342,41 +342,41 @@ export const documents: Document[] = [
 ];
 
 export const conversations: Conversation[] = [
-  { id: 'conv1', clientId: 'u2', clientName: 'Karim El Fassi', lastMessage: 'D\'accord, merci pour la mise à jour.', lastMessageAt: '2024-10-20T16:30:00', unreadCount: 0 },
+  { id: 'conv1', clientId: 'u2', clientName: 'Karim Chaabane', lastMessage: 'D\'accord, merci pour la mise à jour.', lastMessageAt: '2024-10-20T16:30:00', unreadCount: 0 },
   { id: 'conv2', clientId: 'u3', clientName: 'Sophie Martin', lastMessage: 'Pouvez-vous m\'envoyer le connaissement ?', lastMessageAt: '2024-11-18T10:15:00', unreadCount: 1 },
-  { id: 'conv3', clientId: 'u4', clientName: 'Ahmed Tazi', lastMessage: 'La livraison est prévue pour quand ?', lastMessageAt: '2024-11-28T14:00:00', unreadCount: 2 },
+  { id: 'conv3', clientId: 'u4', clientName: 'Ahmed Bouzid', lastMessage: 'La livraison est prévue pour quand ?', lastMessageAt: '2024-11-28T14:00:00', unreadCount: 2 },
   { id: 'conv4', clientId: 'u5', clientName: 'Li Wei', lastMessage: 'Shipment tracking shows Suez canal. ETA still valid?', lastMessageAt: '2024-09-28T08:30:00', unreadCount: 0 },
-  { id: 'conv5', clientId: 'u6', clientName: 'Fatima Zahra Alaoui', lastMessage: 'Les documents douaniers sont-ils prêts ?', lastMessageAt: '2024-12-05T11:00:00', unreadCount: 1 },
+  { id: 'conv5', clientId: 'u6', clientName: 'Fatima Zahra Mejri', lastMessage: 'Les documents douaniers sont-ils prêts ?', lastMessageAt: '2024-12-05T11:00:00', unreadCount: 1 },
   { id: 'conv6', clientId: 'u8', clientName: 'Marco Rossi', lastMessage: 'Quando sarà disponibile il BL?', lastMessageAt: '2024-10-16T09:45:00', unreadCount: 0 },
 ];
 
 export const messages: Message[] = [
   // Conv 1 - Karim
-  { id: 'm1', conversationId: 'conv1', senderId: 'u2', senderName: 'Karim El Fassi', senderRole: 'client', content: 'Bonjour, je voudrais savoir où en est ma commande BK-2024-0001.', read: true, createdAt: '2024-08-15T09:00:00' },
-  { id: 'm2', conversationId: 'conv1', senderId: 'u1', senderName: 'Mohamed Bennani', senderRole: 'admin', content: 'Bonjour Karim, votre expédition est actuellement en transit. Le navire CMA CGM Marco Polo a passé le détroit de Malacca.', read: true, createdAt: '2024-08-15T09:30:00' },
-  { id: 'm3', conversationId: 'conv1', senderId: 'u2', senderName: 'Karim El Fassi', senderRole: 'client', content: 'Merci ! Quand est prévue l\'arrivée à Casablanca ?', read: true, createdAt: '2024-08-15T10:00:00' },
-  { id: 'm4', conversationId: 'conv1', senderId: 'u1', senderName: 'Mohamed Bennani', senderRole: 'admin', content: 'L\'ETA est le 5 septembre. Vous recevrez une notification dès l\'arrivée au port.', read: true, createdAt: '2024-08-15T10:15:00' },
-  { id: 'm5', conversationId: 'conv1', senderId: 'u2', senderName: 'Karim El Fassi', senderRole: 'client', content: 'Aussi, j\'ai une nouvelle demande pour du tissu depuis Istanbul. Je vais soumettre le formulaire.', read: true, createdAt: '2024-10-20T15:00:00' },
-  { id: 'm6', conversationId: 'conv1', senderId: 'u1', senderName: 'Mohamed Bennani', senderRole: 'admin', content: 'Parfait, nous traiterons votre demande rapidement.', read: true, createdAt: '2024-10-20T15:30:00' },
-  { id: 'm7', conversationId: 'conv1', senderId: 'u2', senderName: 'Karim El Fassi', senderRole: 'client', content: 'D\'accord, merci pour la mise à jour.', read: true, createdAt: '2024-10-20T16:30:00' },
+  { id: 'm1', conversationId: 'conv1', senderId: 'u2', senderName: 'Karim Chaabane', senderRole: 'client', content: 'Bonjour, je voudrais savoir où en est ma commande BK-2024-0001.', read: true, createdAt: '2024-08-15T09:00:00' },
+  { id: 'm2', conversationId: 'conv1', senderId: 'u1', senderName: 'Mohamed Ben Ali', senderRole: 'admin', content: 'Bonjour Karim, votre expédition est actuellement en transit. Le navire CMA CGM Marco Polo a passé le détroit de Malacca.', read: true, createdAt: '2024-08-15T09:30:00' },
+  { id: 'm3', conversationId: 'conv1', senderId: 'u2', senderName: 'Karim Chaabane', senderRole: 'client', content: 'Merci ! Quand est prévue l\'arrivée à Radès ?', read: true, createdAt: '2024-08-15T10:00:00' },
+  { id: 'm4', conversationId: 'conv1', senderId: 'u1', senderName: 'Mohamed Ben Ali', senderRole: 'admin', content: 'L\'ETA est le 5 septembre. Vous recevrez une notification dès l\'arrivée au port.', read: true, createdAt: '2024-08-15T10:15:00' },
+  { id: 'm5', conversationId: 'conv1', senderId: 'u2', senderName: 'Karim Chaabane', senderRole: 'client', content: 'Aussi, j\'ai une nouvelle demande pour du tissu depuis Istanbul. Je vais soumettre le formulaire.', read: true, createdAt: '2024-10-20T15:00:00' },
+  { id: 'm6', conversationId: 'conv1', senderId: 'u1', senderName: 'Mohamed Ben Ali', senderRole: 'admin', content: 'Parfait, nous traiterons votre demande rapidement.', read: true, createdAt: '2024-10-20T15:30:00' },
+  { id: 'm7', conversationId: 'conv1', senderId: 'u2', senderName: 'Karim Chaabane', senderRole: 'client', content: 'D\'accord, merci pour la mise à jour.', read: true, createdAt: '2024-10-20T16:30:00' },
   // Conv 2 - Sophie
-  { id: 'm8', conversationId: 'conv2', senderId: 'u3', senderName: 'Sophie Martin', senderRole: 'client', content: 'Bonjour, ma cargaison d\'agrumes est arrivée à Anvers ?', read: true, createdAt: '2024-11-16T08:00:00' },
-  { id: 'm9', conversationId: 'conv2', senderId: 'u1', senderName: 'Mohamed Bennani', senderRole: 'admin', content: 'Oui Sophie, le navire est arrivé le 15 novembre. Le dédouanement est en cours.', read: true, createdAt: '2024-11-16T08:30:00' },
+  { id: 'm8', conversationId: 'conv2', senderId: 'u3', senderName: 'Sophie Martin', senderRole: 'client', content: 'Bonjour, ma cargaison de dattes est arrivée à Gênes ?', read: true, createdAt: '2024-11-16T08:00:00' },
+  { id: 'm9', conversationId: 'conv2', senderId: 'u1', senderName: 'Mohamed Ben Ali', senderRole: 'admin', content: 'Oui Sophie, le navire est arrivé le 15 novembre. Le dédouanement est en cours.', read: true, createdAt: '2024-11-16T08:30:00' },
   { id: 'm10', conversationId: 'conv2', senderId: 'u3', senderName: 'Sophie Martin', senderRole: 'client', content: 'Pouvez-vous m\'envoyer le connaissement ?', read: false, createdAt: '2024-11-18T10:15:00' },
   // Conv 3 - Ahmed
-  { id: 'm11', conversationId: 'conv3', senderId: 'u4', senderName: 'Ahmed Tazi', senderRole: 'client', content: 'Bonjour, mon expédition de matériaux est arrivée à Tanger Med ?', read: true, createdAt: '2024-11-28T13:00:00' },
-  { id: 'm12', conversationId: 'conv3', senderId: 'u1', senderName: 'Mohamed Bennani', senderRole: 'admin', content: 'Oui, le conteneur est au port. Nous préparons le dédouanement.', read: true, createdAt: '2024-11-28T13:30:00' },
-  { id: 'm13', conversationId: 'conv3', senderId: 'u4', senderName: 'Ahmed Tazi', senderRole: 'client', content: 'La livraison est prévue pour quand ?', read: false, createdAt: '2024-11-28T14:00:00' },
+  { id: 'm11', conversationId: 'conv3', senderId: 'u4', senderName: 'Ahmed Bouzid', senderRole: 'client', content: 'Bonjour, mon expédition de matériaux est arrivée à La Goulette ?', read: true, createdAt: '2024-11-28T13:00:00' },
+  { id: 'm12', conversationId: 'conv3', senderId: 'u1', senderName: 'Mohamed Ben Ali', senderRole: 'admin', content: 'Oui, le conteneur est au port. Nous préparons le dédouanement.', read: true, createdAt: '2024-11-28T13:30:00' },
+  { id: 'm13', conversationId: 'conv3', senderId: 'u4', senderName: 'Ahmed Bouzid', senderRole: 'client', content: 'La livraison est prévue pour quand ?', read: false, createdAt: '2024-11-28T14:00:00' },
   // Conv 4 - Li Wei
   { id: 'm14', conversationId: 'conv4', senderId: 'u5', senderName: 'Li Wei', senderRole: 'client', content: 'Hello, can I get an update on shipment SH-2024-0004?', read: true, createdAt: '2024-09-27T10:00:00' },
-  { id: 'm15', conversationId: 'conv4', senderId: 'u1', senderName: 'Mohamed Bennani', senderRole: 'admin', content: 'Hi Li Wei, the vessel is currently passing through the Suez Canal. ETA to Rotterdam remains October 10.', read: true, createdAt: '2024-09-27T10:30:00' },
+  { id: 'm15', conversationId: 'conv4', senderId: 'u1', senderName: 'Mohamed Ben Ali', senderRole: 'admin', content: 'Hi Li Wei, the vessel is currently passing through the Suez Canal. ETA to Rotterdam remains October 10.', read: true, createdAt: '2024-09-27T10:30:00' },
   { id: 'm16', conversationId: 'conv4', senderId: 'u5', senderName: 'Li Wei', senderRole: 'client', content: 'Shipment tracking shows Suez canal. ETA still valid?', read: true, createdAt: '2024-09-28T08:30:00' },
   // Conv 5 - Fatima
-  { id: 'm17', conversationId: 'conv5', senderId: 'u6', senderName: 'Fatima Zahra Alaoui', senderRole: 'client', content: 'Bonjour, mon équipement médical est parti de Singapour ?', read: true, createdAt: '2024-12-02T09:00:00' },
-  { id: 'm18', conversationId: 'conv5', senderId: 'u1', senderName: 'Mohamed Bennani', senderRole: 'admin', content: 'Oui Fatima, le conteneur est en route. ETA le 20 décembre à Casablanca.', read: true, createdAt: '2024-12-02T09:30:00' },
-  { id: 'm19', conversationId: 'conv5', senderId: 'u6', senderName: 'Fatima Zahra Alaoui', senderRole: 'client', content: 'Les documents douaniers sont-ils prêts ?', read: false, createdAt: '2024-12-05T11:00:00' },
+  { id: 'm17', conversationId: 'conv5', senderId: 'u6', senderName: 'Fatima Zahra Mejri', senderRole: 'client', content: 'Bonjour, mon équipement médical est parti de Gênes ?', read: true, createdAt: '2024-12-02T09:00:00' },
+  { id: 'm18', conversationId: 'conv5', senderId: 'u1', senderName: 'Mohamed Ben Ali', senderRole: 'admin', content: 'Oui Fatima, le conteneur est en route. ETA le 20 décembre à Radès.', read: true, createdAt: '2024-12-02T09:30:00' },
+  { id: 'm19', conversationId: 'conv5', senderId: 'u6', senderName: 'Fatima Zahra Mejri', senderRole: 'client', content: 'Les documents douaniers sont-ils prêts ?', read: false, createdAt: '2024-12-05T11:00:00' },
   // Conv 6 - Marco
   { id: 'm20', conversationId: 'conv6', senderId: 'u8', senderName: 'Marco Rossi', senderRole: 'client', content: 'Buongiorno, la mia prenotazione BK-2024-0007 è stata approvata?', read: true, createdAt: '2024-10-15T10:00:00' },
-  { id: 'm21', conversationId: 'conv6', senderId: 'u1', senderName: 'Mohamed Bennani', senderRole: 'admin', content: 'Bonjour Marco, oui votre réservation a été approuvée. Le contrat de transport sera envoyé aujourd\'hui.', read: true, createdAt: '2024-10-15T10:30:00' },
+  { id: 'm21', conversationId: 'conv6', senderId: 'u1', senderName: 'Mohamed Ben Ali', senderRole: 'admin', content: 'Bonjour Marco, oui votre réservation a été approuvée. Le contrat de transport sera envoyé aujourd\'hui.', read: true, createdAt: '2024-10-15T10:30:00' },
   { id: 'm22', conversationId: 'conv6', senderId: 'u8', senderName: 'Marco Rossi', senderRole: 'client', content: 'Quando sarà disponibile il BL?', read: true, createdAt: '2024-10-16T09:45:00' },
 ];
