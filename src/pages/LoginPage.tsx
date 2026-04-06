@@ -20,7 +20,8 @@ export default function LoginPage() {
       toast.success('Connexion réussie');
       // Check user role from localStorage after login
       const user = JSON.parse(localStorage.getItem('logistics_user') || '{}');
-      navigate(user.role === 'admin' ? '/admin' : '/client');
+      const redirectMap: Record<string, string> = { admin: '/admin', manager: '/manager', client: '/client' };
+      navigate(redirectMap[user.role] || '/client');
     } else {
       toast.error(result.error);
     }
