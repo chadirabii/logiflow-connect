@@ -380,3 +380,109 @@ export const messages: Message[] = [
   { id: 'm21', conversationId: 'conv6', senderId: 'u1', senderName: 'Mohamed Ben Ali', senderRole: 'admin', content: 'Bonjour Marco, oui votre réservation a été approuvée. Le contrat de transport sera envoyé aujourd\'hui.', read: true, createdAt: '2024-10-15T10:30:00' },
   { id: 'm22', conversationId: 'conv6', senderId: 'u8', senderName: 'Marco Rossi', senderRole: 'client', content: 'Quando sarà disponibile il BL?', read: true, createdAt: '2024-10-16T09:45:00' },
 ];
+
+// ============= NOTIFICATIONS =============
+export type NotificationType = 'message' | 'status_update' | 'alert' | 'success' | 'info';
+
+export interface Notification {
+  id: string;
+  userId: string;
+  type: NotificationType;
+  title: string;
+  description: string;
+  read: boolean;
+  icon?: 'message' | 'package' | 'alert' | 'check' | 'info';
+  actionUrl?: string;
+  createdAt: string;
+}
+
+export const notifications: Notification[] = [
+  {
+    id: 'notif1',
+    userId: 'u2',
+    type: 'message',
+    title: 'Nouveau message',
+    description: 'Mohamed Ben Ali vous a envoyé un message concernant votre réservation REF-2024-0001',
+    read: false,
+    icon: 'message',
+    actionUrl: '/client/chat',
+    createdAt: new Date(Date.now() - 5 * 60000).toISOString(),
+  },
+  {
+    id: 'notif2',
+    userId: 'u2',
+    type: 'success',
+    title: 'Réservation approuvée',
+    description: 'Votre réservation REF-2024-0002 a été approuvée et confirmée.',
+    read: false,
+    icon: 'check',
+    actionUrl: '/client/orders',
+    createdAt: new Date(Date.now() - 15 * 60000).toISOString(),
+  },
+  {
+    id: 'notif3',
+    userId: 'u2',
+    type: 'status_update',
+    title: 'Mise à jour de suivi',
+    description: 'Votre cargaison REF-SHIP-0045 a quitté le port de Singapour.',
+    read: false,
+    icon: 'package',
+    actionUrl: '/client/tracking',
+    createdAt: new Date(Date.now() - 30 * 60000).toISOString(),
+  },
+  {
+    id: 'notif4',
+    userId: 'u1',
+    type: 'alert',
+    title: 'Nouvelles demandes en attente',
+    description: '5 nouvelles demandes de réservation nécessitent votre révision.',
+    read: false,
+    icon: 'alert',
+    actionUrl: '/admin/requests',
+    createdAt: new Date(Date.now() - 45 * 60000).toISOString(),
+  },
+  {
+    id: 'notif5',
+    userId: 'u1',
+    type: 'info',
+    title: 'Rapport quotidien',
+    description: 'Le rapport d\'activité quotidienne est disponible. 45 cargaisons en transit, 8 arrivées prévues.',
+    read: true,
+    icon: 'info',
+    actionUrl: '/admin',
+    createdAt: new Date(Date.now() - 2 * 3600000).toISOString(),
+  },
+  {
+    id: 'notif6',
+    userId: 'u1',
+    type: 'message',
+    title: 'Nouveau message client',
+    description: 'Sarah Johnson a une question concernant sa réclamation REC-0012.',
+    read: true,
+    icon: 'message',
+    actionUrl: '/admin/reclamations',
+    createdAt: new Date(Date.now() - 4 * 3600000).toISOString(),
+  },
+  {
+    id: 'notif7',
+    userId: 'u3',
+    type: 'status_update',
+    title: 'Douane dégagée',
+    description: 'La cargaison REF-SHIP-0044 a été dégagée par les douanes.',
+    read: false,
+    icon: 'package',
+    actionUrl: '/manager/orders',
+    createdAt: new Date(Date.now() - 20 * 60000).toISOString(),
+  },
+  {
+    id: 'notif8',
+    userId: 'u3',
+    type: 'alert',
+    title: 'Délai de livraison',
+    description: 'La cargaison REF-SHIP-0043 risque de ne pas respecter la date de livraison prévue.',
+    read: false,
+    icon: 'alert',
+    actionUrl: '/manager/orders',
+    createdAt: new Date(Date.now() - 60 * 60000).toISOString(),
+  },
+];

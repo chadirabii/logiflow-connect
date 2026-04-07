@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { NotificationPanel } from "@/components/NotificationPanel";
 
 const managerNav = [
   { label: "Tableau de bord", icon: LayoutDashboard, path: "/manager" },
@@ -110,6 +111,7 @@ export function ManagerLayout({ children }: { children: React.ReactNode }) {
               "Manager"}
           </h2>
           <div className="flex items-center gap-3">
+            <NotificationPanel />
             <span className="text-sm text-muted-foreground">
               {user?.fullName}
             </span>

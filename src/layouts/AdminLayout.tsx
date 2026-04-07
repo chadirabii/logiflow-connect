@@ -17,6 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { conversations } from "@/data/mockData";
+import { NotificationPanel } from "@/components/NotificationPanel";
 
 const adminNav = [
   { label: "Tableau de bord", icon: LayoutDashboard, path: "/admin" },
@@ -123,6 +124,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
               "Administration"}
           </h2>
           <div className="flex items-center gap-3">
+            <NotificationPanel />
             <span className="text-sm text-muted-foreground">Admin</span>
             <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-semibold">
               A

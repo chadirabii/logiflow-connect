@@ -17,6 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { conversations } from "@/data/mockData";
+import { NotificationPanel } from "@/components/NotificationPanel";
 
 const clientNav = [
   { label: "Tableau de bord", icon: LayoutDashboard, path: "/client" },
@@ -123,6 +124,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
               "Détail"}
           </h2>
           <div className="flex items-center gap-3">
+            <NotificationPanel />
             <span className="text-sm text-muted-foreground">
               {user?.fullName}
             </span>
