@@ -2,7 +2,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard,
-  Package,
   AlertTriangle,
   BarChart3,
   LogOut,
@@ -17,7 +16,6 @@ import { NotificationPanel } from "@/components/NotificationPanel";
 
 const managerNav = [
   { label: "Tableau de bord", icon: LayoutDashboard, path: "/manager" },
-  { label: "Commandes", icon: Package, path: "/manager/orders" },
   { label: "Réclamations", icon: AlertTriangle, path: "/manager/reclamations" },
   { label: "Messagerie", icon: MessageSquare, path: "/manager/chat" },
   { label: "Commandes Historiques", icon: History, path: "/manager/legacy-orders" },
