@@ -17,7 +17,6 @@ import { NotificationPanel } from "@/components/NotificationPanel";
 
 const managerNav = [
   { label: "Tableau de bord", icon: LayoutDashboard, path: "/manager" },
-  { label: "Commandes", icon: Package, path: "/manager/orders" },
   { label: "Réclamations", icon: AlertTriangle, path: "/manager/reclamations" },
   { label: "Messagerie", icon: MessageSquare, path: "/manager/chat" },
   { label: "Commandes Historiques", icon: History, path: "/manager/legacy-orders" },
