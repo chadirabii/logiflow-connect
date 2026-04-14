@@ -126,7 +126,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const updateProfile = useCallback(async (data: Partial<{ fullName: string; company: string; phone: string; rneFile: string; patenteFile: string }>) => {
     if (!user) return;
-    const updates: Record<string, string | undefined> = {};
+    const updates: { full_name?: string; company?: string; phone?: string; rne_file?: string; patente_file?: string } = {};
     if (data.fullName !== undefined) updates.full_name = data.fullName;
     if (data.company !== undefined) updates.company = data.company;
     if (data.phone !== undefined) updates.phone = data.phone;
