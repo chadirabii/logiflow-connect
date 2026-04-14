@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ClientLayout } from '@/layouts/ClientLayout';
-import { reclamations, bookingRequests, RECLAMATION_STATUS_LABELS, RECLAMATION_STATUS_COLORS, RECLAMATION_PRIORITY_LABELS, RECLAMATION_PRIORITY_COLORS, type Reclamation, type ReclamationPriority } from '@/data/mockData';
+import { useMyReclamations, useMyBookings, useCreateReclamation } from '@/hooks/useSupabaseData';
+import { RECLAMATION_STATUS_LABELS, RECLAMATION_STATUS_COLORS, RECLAMATION_PRIORITY_LABELS, RECLAMATION_PRIORITY_COLORS } from '@/data/mockData';
+import type { ReclamationPriority } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,30 +16,30 @@ import { cn } from '@/lib/utils';
 
 export default function ClientReclamationsPage() {
   const { user } = useAuth();
-  const myReclamations = reclamations.filter(r => r.clientId === user?.id);
-  const myBookings = bookingRequests.filter(b => b.clientId === user?.id);
+  const { data: myReclamations = [] } = useMyReclamations();
+  const { data: myBookings = [] } = useMyBookings();
+  const createReclamation = useCreateReclamation();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ subject: '', description: '', priority: 'medium' as ReclamationPriority, bookingRef: '' });
-  const [selected, setSelected] = useState<Reclamation | null>(null);
+  const [selected, setSelected] = useState<any>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newRec: Reclamation = {
-      id: `r${Date.now()}`,
-      clientId: user!.id,
-      clientName: user!.fullName,
-      bookingRef: form.bookingRef || undefined,
-      subject: form.subject,
-      description: form.description,
-      priority: form.priority,
-      status: 'open',
-      createdAt: new Date().toISOString().split('T')[0],
-      updatedAt: new Date().toISOString().split('T')[0],
-    };
-    reclamations.push(newRec);
-    setForm({ subject: '', description: '', priority: 'medium', bookingRef: '' });
-    setOpen(false);
-    toast.success('Réclamation soumise avec succès');
+    try {
+      await createReclamation.mutateAsync({
+        client_id: user!.id,
+        booking_ref: form.bookingRef || null,
+        subject: form.subject,
+        description: form.description,
+        priority: form.priority as any,
+        status: 'open',
+      });
+      setForm({ subject: '', description: '', priority: 'medium', bookingRef: '' });
+      setOpen(false);
+      toast.success('Réclamation soumise avec succès');
+    } catch {
+      toast.error('Erreur lors de la soumission');
+    }
   };
 
   return (
@@ -55,9 +57,7 @@ export default function ClientReclamationsPage() {
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-lg">
-              <DialogHeader>
-                <DialogTitle>Soumettre une réclamation</DialogTitle>
-              </DialogHeader>
+              <DialogHeader><DialogTitle>Soumettre une réclamation</DialogTitle></DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <Label>Commande associée (optionnel)</Label>
@@ -65,7 +65,7 @@ export default function ClientReclamationsPage() {
                     <SelectTrigger className="mt-1.5"><SelectValue placeholder="Sélectionner une commande" /></SelectTrigger>
                     <SelectContent>
                       {myBookings.map(b => (
-                        <SelectItem key={b.id} value={b.referenceNumber}>{b.referenceNumber} — {b.originPort} → {b.destinationPort}</SelectItem>
+                        <SelectItem key={b.id} value={b.reference_number}>{b.reference_number} — {b.origin_port} → {b.destination_port}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -89,13 +89,14 @@ export default function ClientReclamationsPage() {
                   <Label>Description *</Label>
                   <Textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Décrivez votre réclamation en détail..." className="mt-1.5 min-h-[120px]" required />
                 </div>
-                <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">Soumettre</Button>
+                <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={createReclamation.isPending}>
+                  {createReclamation.isPending ? 'Soumission...' : 'Soumettre'}
+                </Button>
               </form>
             </DialogContent>
           </Dialog>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="rounded-xl border border-border bg-card p-4 flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-warning/10 flex items-center justify-center"><AlertTriangle className="h-5 w-5 text-warning" /></div>
@@ -111,11 +112,8 @@ export default function ClientReclamationsPage() {
           </div>
         </div>
 
-        {/* List */}
         <div className="rounded-xl border border-border bg-card">
-          <div className="p-4 border-b border-border">
-            <h3 className="font-heading font-semibold text-card-foreground">Historique des réclamations</h3>
-          </div>
+          <div className="p-4 border-b border-border"><h3 className="font-heading font-semibold text-card-foreground">Historique des réclamations</h3></div>
           {myReclamations.length === 0 ? (
             <div className="p-8 text-center text-muted-foreground">Aucune réclamation pour le moment.</div>
           ) : (
@@ -126,16 +124,16 @@ export default function ClientReclamationsPage() {
                     <div className="space-y-1">
                       <p className="font-medium text-card-foreground">{r.subject}</p>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        {r.bookingRef && <span className="bg-muted px-2 py-0.5 rounded">{r.bookingRef}</span>}
-                        <span>{r.createdAt}</span>
+                        {r.booking_ref && <span className="bg-muted px-2 py-0.5 rounded">{r.booking_ref}</span>}
+                        <span>{new Date(r.created_at).toLocaleDateString('fr-FR')}</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', RECLAMATION_PRIORITY_COLORS[r.priority])}>
-                        {RECLAMATION_PRIORITY_LABELS[r.priority]}
+                      <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', RECLAMATION_PRIORITY_COLORS[r.priority as keyof typeof RECLAMATION_PRIORITY_COLORS])}>
+                        {RECLAMATION_PRIORITY_LABELS[r.priority as keyof typeof RECLAMATION_PRIORITY_LABELS]}
                       </span>
-                      <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', RECLAMATION_STATUS_COLORS[r.status])}>
-                        {RECLAMATION_STATUS_LABELS[r.status]}
+                      <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', RECLAMATION_STATUS_COLORS[r.status as keyof typeof RECLAMATION_STATUS_COLORS])}>
+                        {RECLAMATION_STATUS_LABELS[r.status as keyof typeof RECLAMATION_STATUS_LABELS]}
                       </span>
                     </div>
                   </div>
@@ -145,34 +143,31 @@ export default function ClientReclamationsPage() {
           )}
         </div>
 
-        {/* Detail dialog */}
         <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
           <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>{selected?.subject}</DialogTitle>
-            </DialogHeader>
+            <DialogHeader><DialogTitle>{selected?.subject}</DialogTitle></DialogHeader>
             {selected && (
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', RECLAMATION_STATUS_COLORS[selected.status])}>
-                    {RECLAMATION_STATUS_LABELS[selected.status]}
+                  <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', RECLAMATION_STATUS_COLORS[selected.status as keyof typeof RECLAMATION_STATUS_COLORS])}>
+                    {RECLAMATION_STATUS_LABELS[selected.status as keyof typeof RECLAMATION_STATUS_LABELS]}
                   </span>
-                  <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', RECLAMATION_PRIORITY_COLORS[selected.priority])}>
-                    {RECLAMATION_PRIORITY_LABELS[selected.priority]}
+                  <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', RECLAMATION_PRIORITY_COLORS[selected.priority as keyof typeof RECLAMATION_PRIORITY_COLORS])}>
+                    {RECLAMATION_PRIORITY_LABELS[selected.priority as keyof typeof RECLAMATION_PRIORITY_LABELS]}
                   </span>
-                  {selected.bookingRef && <span className="text-xs bg-muted px-2 py-0.5 rounded">{selected.bookingRef}</span>}
+                  {selected.booking_ref && <span className="text-xs bg-muted px-2 py-0.5 rounded">{selected.booking_ref}</span>}
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground mb-1">Description</p>
                   <p className="text-sm text-foreground">{selected.description}</p>
                 </div>
-                {selected.adminResponse && (
+                {selected.admin_response && (
                   <div className="rounded-lg bg-accent/5 border border-accent/20 p-3">
                     <p className="text-sm font-medium text-accent mb-1">Réponse de l'admin</p>
-                    <p className="text-sm text-foreground">{selected.adminResponse}</p>
+                    <p className="text-sm text-foreground">{selected.admin_response}</p>
                   </div>
                 )}
-                <p className="text-xs text-muted-foreground">Soumise le {selected.createdAt} · Mise à jour le {selected.updatedAt}</p>
+                <p className="text-xs text-muted-foreground">Soumise le {new Date(selected.created_at).toLocaleDateString('fr-FR')}</p>
               </div>
             )}
           </DialogContent>
