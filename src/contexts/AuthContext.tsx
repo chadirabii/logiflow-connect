@@ -1,11 +1,29 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import { users, type User, type UserRole } from '@/data/mockData';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import type { User as SupabaseUser, Session } from '@supabase/supabase-js';
+
+export type UserRole = 'admin' | 'client' | 'manager';
+
+export interface AppUser {
+  id: string;
+  email: string;
+  role: UserRole;
+  fullName: string;
+  company?: string;
+  phone?: string;
+  rneFile?: string;
+  patenteFile?: string;
+  avatarUrl?: string;
+}
 
 interface AuthContextType {
-  user: User | null;
-  login: (email: string, password: string) => { success: boolean; error?: string };
-  register: (data: { email: string; password: string; fullName: string; company?: string; phone?: string; rneFile?: string; patenteFile?: string }) => { success: boolean; error?: string };
-  logout: () => void;
+  user: AppUser | null;
+  session: Session | null;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  register: (data: { email: string; password: string; fullName: string; company?: string; phone?: string }) => Promise<{ success: boolean; error?: string }>;
+  logout: () => Promise<void>;
+  updateProfile: (data: Partial<{ fullName: string; company: string; phone: string; rneFile: string; patenteFile: string }>) => Promise<void>;
   isAuthenticated: boolean;
   isAdmin: boolean;
   isClient: boolean;
@@ -14,55 +32,120 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => {
-    const stored = localStorage.getItem('logistics_user');
-    return stored ? JSON.parse(stored) : null;
-  });
+async function fetchAppUser(supabaseUser: SupabaseUser): Promise<AppUser | null> {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('user_id', supabaseUser.id)
+    .single();
 
-  const login = useCallback((email: string, password: string) => {
-    const found = users.find(u => u.email === email && u.password === password);
-    if (found) {
-      setUser(found);
-      localStorage.setItem('logistics_user', JSON.stringify(found));
-      return { success: true };
-    }
-    return { success: false, error: 'Email ou mot de passe incorrect' };
+  const { data: roles } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', supabaseUser.id);
+
+  const role: UserRole = roles?.find(r => r.role === 'admin')
+    ? 'admin'
+    : roles?.find(r => r.role === 'manager')
+    ? 'manager'
+    : 'client';
+
+  return {
+    id: supabaseUser.id,
+    email: supabaseUser.email || '',
+    role,
+    fullName: profile?.full_name || '',
+    company: profile?.company || undefined,
+    phone: profile?.phone || undefined,
+    rneFile: profile?.rne_file || undefined,
+    patenteFile: profile?.patente_file || undefined,
+    avatarUrl: profile?.avatar_url || undefined,
+  };
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<AppUser | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setSession(session);
+      if (session?.user) {
+        // Use setTimeout to avoid Supabase auth deadlock
+        setTimeout(async () => {
+          const appUser = await fetchAppUser(session.user);
+          setUser(appUser);
+          setLoading(false);
+        }, 0);
+      } else {
+        setUser(null);
+        setLoading(false);
+      }
+    });
+
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      setSession(session);
+      if (session?.user) {
+        const appUser = await fetchAppUser(session.user);
+        setUser(appUser);
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const register = useCallback((data: { email: string; password: string; fullName: string; company?: string; phone?: string; rneFile?: string; patenteFile?: string }) => {
-    if (users.find(u => u.email === data.email)) {
-      return { success: false, error: 'Cet email est déjà utilisé' };
-    }
-    const newUser: User = {
-      id: `u${Date.now()}`,
-      email: data.email,
-      password: data.password,
-      role: 'client',
-      fullName: data.fullName,
-      company: data.company,
-      phone: data.phone,
-      rneFile: data.rneFile,
-      patenteFile: data.patenteFile,
-      createdAt: new Date().toISOString().split('T')[0],
-    };
-    users.push(newUser);
-    setUser(newUser);
-    localStorage.setItem('logistics_user', JSON.stringify(newUser));
+  const login = useCallback(async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { success: false, error: error.message };
     return { success: true };
   }, []);
 
-  const logout = useCallback(() => {
-    setUser(null);
-    localStorage.removeItem('logistics_user');
+  const register = useCallback(async (data: { email: string; password: string; fullName: string; company?: string; phone?: string }) => {
+    const { error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: {
+        data: {
+          full_name: data.fullName,
+          company: data.company,
+          phone: data.phone,
+        },
+      },
+    });
+    if (error) return { success: false, error: error.message };
+    return { success: true };
   }, []);
+
+  const logout = useCallback(async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    setSession(null);
+  }, []);
+
+  const updateProfile = useCallback(async (data: Partial<{ fullName: string; company: string; phone: string; rneFile: string; patenteFile: string }>) => {
+    if (!user) return;
+    const updates: { full_name?: string; company?: string; phone?: string; rne_file?: string; patente_file?: string } = {};
+    if (data.fullName !== undefined) updates.full_name = data.fullName;
+    if (data.company !== undefined) updates.company = data.company;
+    if (data.phone !== undefined) updates.phone = data.phone;
+    if (data.rneFile !== undefined) updates.rne_file = data.rneFile;
+    if (data.patenteFile !== undefined) updates.patente_file = data.patenteFile;
+
+    await supabase.from('profiles').update(updates).eq('user_id', user.id);
+    setUser(prev => prev ? { ...prev, ...data } : prev);
+  }, [user]);
 
   return (
     <AuthContext.Provider value={{
       user,
+      session,
+      loading,
       login,
       register,
       logout,
+      updateProfile,
       isAuthenticated: !!user,
       isAdmin: user?.role === 'admin',
       isClient: user?.role === 'client',

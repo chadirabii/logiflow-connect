@@ -8,13 +8,14 @@ import { toast } from 'sonner';
 import { FileText } from 'lucide-react';
 
 export default function ClientProfilePage() {
-  const { user } = useAuth();
+  const { user, updateProfile } = useAuth();
   const [form, setForm] = useState({
     fullName: user?.fullName || '', email: user?.email || '', company: user?.company || '', phone: user?.phone || '',
   });
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    await updateProfile({ fullName: form.fullName, company: form.company, phone: form.phone });
     toast.success('Profil mis à jour');
   };
 
@@ -25,11 +26,10 @@ export default function ClientProfilePage() {
         <div className="rounded-xl border border-border bg-card p-6">
           <form onSubmit={handleSave} className="space-y-4">
             <div><Label>Nom complet</Label><Input value={form.fullName} onChange={e => setForm({ ...form, fullName: e.target.value })} className="mt-1.5" /></div>
-            <div><Label>Email</Label><Input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className="mt-1.5" /></div>
+            <div><Label>Email</Label><Input type="email" value={form.email} disabled className="mt-1.5" /></div>
             <div><Label>Société</Label><Input value={form.company} onChange={e => setForm({ ...form, company: e.target.value })} className="mt-1.5" /></div>
             <div><Label>Téléphone</Label><Input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className="mt-1.5" /></div>
 
-            {/* RNE & Patente files (read-only display) */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Document RNE</Label>

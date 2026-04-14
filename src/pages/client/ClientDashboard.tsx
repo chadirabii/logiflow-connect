@@ -1,5 +1,5 @@
 import { useAuth } from '@/contexts/AuthContext';
-import { bookingRequests, shipments, conversations } from '@/data/mockData';
+import { useMyBookings, useMyShipments, useAllConversations } from '@/hooks/useSupabaseData';
 import { KPICard } from '@/components/KPICard';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Ship, Package, Clock, MessageSquare, Plus, MapPin } from 'lucide-react';
@@ -10,13 +10,12 @@ import { ClientLayout } from '@/layouts/ClientLayout';
 export default function ClientDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const myBookings = bookingRequests.filter(b => b.clientId === user?.id);
-  const myShipments = shipments.filter(s => s.clientId === user?.id);
+  const { data: myBookings = [] } = useMyBookings();
+  const { data: myShipments = [] } = useMyShipments();
+
   const activeShipments = myShipments.filter(s => !['delivered', 'rejected'].includes(s.status));
   const pendingRequests = myBookings.filter(b => ['submitted', 'under_review'].includes(b.status));
   const delivered = myBookings.filter(b => b.status === 'delivered');
-  const myConvos = conversations.filter(c => c.clientId === user?.id);
-  const unread = myConvos.reduce((sum, c) => sum + c.unreadCount, 0);
 
   return (
     <ClientLayout>
@@ -35,11 +34,10 @@ export default function ClientDashboard() {
           <KPICard title="Expéditions actives" value={activeShipments.length} icon={Ship} />
           <KPICard title="Demandes en attente" value={pendingRequests.length} icon={Clock} />
           <KPICard title="Commandes terminées" value={delivered.length} icon={Package} />
-          <KPICard title="Messages non lus" value={unread} icon={MessageSquare} />
+          <KPICard title="Total commandes" value={myBookings.length} icon={MessageSquare} />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6">
-          {/* Recent orders */}
           <div className="rounded-xl border border-border bg-card p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-heading font-semibold text-card-foreground">Commandes récentes</h3>
@@ -49,8 +47,8 @@ export default function ClientDashboard() {
               {myBookings.slice(0, 5).map(b => (
                 <div key={b.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted cursor-pointer" onClick={() => navigate(`/client/orders/${b.id}`)}>
                   <div>
-                    <p className="text-sm font-medium text-card-foreground">{b.referenceNumber}</p>
-                    <p className="text-xs text-muted-foreground">{b.originPort} → {b.destinationPort}</p>
+                    <p className="text-sm font-medium text-card-foreground">{b.reference_number}</p>
+                    <p className="text-xs text-muted-foreground">{b.origin_port} → {b.destination_port}</p>
                   </div>
                   <StatusBadge status={b.status} />
                 </div>
@@ -59,7 +57,6 @@ export default function ClientDashboard() {
             </div>
           </div>
 
-          {/* Active shipments */}
           <div className="rounded-xl border border-border bg-card p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-heading font-semibold text-card-foreground">Expéditions en cours</h3>
@@ -69,10 +66,10 @@ export default function ClientDashboard() {
               {activeShipments.slice(0, 5).map(s => (
                 <div key={s.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted cursor-pointer" onClick={() => navigate('/client/tracking')}>
                   <div>
-                    <p className="text-sm font-medium text-card-foreground">{s.referenceNumber}</p>
+                    <p className="text-sm font-medium text-card-foreground">{s.reference_number}</p>
                     <div className="flex items-center gap-1 mt-0.5">
                       <MapPin className="h-3 w-3 text-accent" />
-                      <p className="text-xs text-muted-foreground">{s.currentLocation}</p>
+                      <p className="text-xs text-muted-foreground">{s.current_location}</p>
                     </div>
                   </div>
                   <StatusBadge status={s.status} />

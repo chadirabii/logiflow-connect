@@ -36,13 +36,24 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 function ProtectedRoute({ children, role }: { children: React.ReactNode; role: 'client' | 'admin' | 'manager' }) {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, loading } = useAuth();
+  if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div></div>;
   if (!isAuthenticated) return <Navigate to="/login" />;
   if (user?.role !== role) {
     const redirectMap = { admin: '/admin', client: '/client', manager: '/manager' };
     return <Navigate to={redirectMap[user?.role || 'client'] || '/client'} />;
   }
   return <>{children}</>;
+}
+
+function AuthRedirect() {
+  const { isAuthenticated, user, loading } = useAuth();
+  if (loading) return null;
+  if (isAuthenticated && user) {
+    const redirectMap = { admin: '/admin', client: '/client', manager: '/manager' };
+    return <Navigate to={redirectMap[user.role] || '/client'} />;
+  }
+  return null;
 }
 
 const App = () => (

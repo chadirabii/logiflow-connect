@@ -5,16 +5,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ fullName: '', email: '', company: '', phone: '', password: '', confirm: '' });
   const [rneFile, setRneFile] = useState<File | null>(null);
   const [patenteFile, setPatenteFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (form.password !== form.confirm) {
       toast.error('Les mots de passe ne correspondent pas');
@@ -28,21 +30,44 @@ export default function RegisterPage() {
       toast.error('Veuillez téléverser votre document Patente');
       return;
     }
-    const result = register({
+
+    setIsLoading(true);
+    const result = await register({
       email: form.email,
       password: form.password,
       fullName: form.fullName,
       company: form.company,
       phone: form.phone,
-      rneFile: rneFile.name,
-      patenteFile: patenteFile.name,
     });
+
     if (result.success) {
+      // Upload files after registration (user session will be available)
+      // For now, store file names in profile
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        // Upload RNE
+        const rneExt = rneFile.name.split('.').pop();
+        const rnePath = `${user.id}/rne.${rneExt}`;
+        await supabase.storage.from('user-documents').upload(rnePath, rneFile);
+
+        // Upload Patente
+        const patenteExt = patenteFile.name.split('.').pop();
+        const patentePath = `${user.id}/patente.${patenteExt}`;
+        await supabase.storage.from('user-documents').upload(patentePath, patenteFile);
+
+        // Update profile with file references
+        await supabase.from('profiles').update({
+          rne_file: rnePath,
+          patente_file: patentePath,
+        }).eq('user_id', user.id);
+      }
+
       toast.success('Compte créé avec succès');
       navigate('/client');
     } else {
-      toast.error(result.error);
+      toast.error(result.error || 'Erreur lors de la création du compte');
     }
+    setIsLoading(false);
   };
 
   const update = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }));
@@ -73,16 +98,13 @@ export default function RegisterPage() {
             </div>
             <div>
               <Label htmlFor="phone">Téléphone</Label>
-              <Input id="phone" value={form.phone} onChange={e => update('phone', e.target.value)} placeholder="+212 600 000 000" className="mt-1.5" />
+              <Input id="phone" value={form.phone} onChange={e => update('phone', e.target.value)} placeholder="+216 600 000 000" className="mt-1.5" />
             </div>
 
             {/* RNE File Upload */}
             <div>
               <Label>Document RNE (Registre National des Entreprises) *</Label>
-              <label
-                htmlFor="rneFile"
-                className="mt-1.5 flex items-center gap-3 p-3 rounded-lg border border-border bg-muted/30 cursor-pointer hover:bg-muted/60 transition-colors"
-              >
+              <label htmlFor="rneFile" className="mt-1.5 flex items-center gap-3 p-3 rounded-lg border border-border bg-muted/30 cursor-pointer hover:bg-muted/60 transition-colors">
                 {rneFile ? (
                   <>
                     <CheckCircle className="h-5 w-5 text-success flex-shrink-0" />
@@ -94,13 +116,7 @@ export default function RegisterPage() {
                     <span className="text-sm text-muted-foreground">Cliquez pour téléverser le fichier RNE</span>
                   </>
                 )}
-                <input
-                  id="rneFile"
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  className="hidden"
-                  onChange={e => setRneFile(e.target.files?.[0] || null)}
-                />
+                <input id="rneFile" type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={e => setRneFile(e.target.files?.[0] || null)} />
               </label>
               <p className="text-xs text-muted-foreground mt-1">Formats acceptés : PDF, JPG, PNG</p>
             </div>
@@ -108,10 +124,7 @@ export default function RegisterPage() {
             {/* Patente File Upload */}
             <div>
               <Label>Document Patente *</Label>
-              <label
-                htmlFor="patenteFile"
-                className="mt-1.5 flex items-center gap-3 p-3 rounded-lg border border-border bg-muted/30 cursor-pointer hover:bg-muted/60 transition-colors"
-              >
+              <label htmlFor="patenteFile" className="mt-1.5 flex items-center gap-3 p-3 rounded-lg border border-border bg-muted/30 cursor-pointer hover:bg-muted/60 transition-colors">
                 {patenteFile ? (
                   <>
                     <CheckCircle className="h-5 w-5 text-success flex-shrink-0" />
@@ -123,13 +136,7 @@ export default function RegisterPage() {
                     <span className="text-sm text-muted-foreground">Cliquez pour téléverser le fichier Patente</span>
                   </>
                 )}
-                <input
-                  id="patenteFile"
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  className="hidden"
-                  onChange={e => setPatenteFile(e.target.files?.[0] || null)}
-                />
+                <input id="patenteFile" type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={e => setPatenteFile(e.target.files?.[0] || null)} />
               </label>
               <p className="text-xs text-muted-foreground mt-1">Formats acceptés : PDF, JPG, PNG</p>
             </div>
@@ -142,7 +149,9 @@ export default function RegisterPage() {
               <Label htmlFor="confirm">Confirmer le mot de passe *</Label>
               <Input id="confirm" type="password" value={form.confirm} onChange={e => update('confirm', e.target.value)} placeholder="••••••••" className="mt-1.5" required />
             </div>
-            <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">Créer mon compte</Button>
+            <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isLoading}>
+              {isLoading ? 'Création...' : 'Créer mon compte'}
+            </Button>
           </form>
 
           <p className="mt-6 text-sm text-center text-muted-foreground">
