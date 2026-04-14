@@ -7,12 +7,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { bookingRequests, PORTS, CONTAINER_TYPES, INCOTERMS } from '@/data/mockData';
+import { PORTS, CONTAINER_TYPES, INCOTERMS } from '@/data/mockData';
+import { useCreateBooking } from '@/hooks/useSupabaseData';
 import { toast } from 'sonner';
 
 export default function NewBookingPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const createBooking = useCreateBooking();
   const [form, setForm] = useState({
     fullName: user?.fullName || '', company: user?.company || '', email: user?.email || '', phone: user?.phone || '',
     originPort: '', destinationPort: '', cargoType: '', weight: '', volume: '',
@@ -22,37 +24,38 @@ export default function NewBookingPage() {
 
   const update = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const refNum = `BK-2024-${String(bookingRequests.length + 1).padStart(4, '0')}`;
     const originPort = PORTS.find(p => p.id === form.originPort);
     const destPort = PORTS.find(p => p.id === form.destinationPort);
-    bookingRequests.push({
-      id: `b${Date.now()}`,
-      clientId: user!.id,
-      referenceNumber: refNum,
-      fullName: form.fullName,
-      company: form.company,
-      email: form.email,
-      phone: form.phone,
-      originCountry: originPort?.country || '',
-      originPort: originPort?.name || '',
-      destinationCountry: destPort?.country || '',
-      destinationPort: destPort?.name || '',
-      cargoType: form.cargoType,
-      weight: Number(form.weight),
-      volume: Number(form.volume),
-      containerType: form.containerType,
-      shipmentMode: form.shipmentMode as 'FCL' | 'LCL',
-      incoterm: form.incoterm,
-      requestedDate: form.requestedDate,
-      specialInstructions: form.specialInstructions,
-      status: 'submitted',
-      createdAt: new Date().toISOString().split('T')[0],
-      updatedAt: new Date().toISOString().split('T')[0],
-    });
-    toast.success(`Réservation ${refNum} créée avec succès !`);
-    navigate('/client/orders');
+    const refNum = `BK-${Date.now().toString().slice(-8)}`;
+
+    try {
+      await createBooking.mutateAsync({
+        client_id: user!.id,
+        reference_number: refNum,
+        full_name: form.fullName,
+        company: form.company,
+        email: form.email,
+        phone: form.phone,
+        origin_country: originPort?.country || '',
+        origin_port: originPort?.name || '',
+        destination_country: destPort?.country || '',
+        destination_port: destPort?.name || '',
+        cargo_type: form.cargoType,
+        weight: Number(form.weight),
+        volume: Number(form.volume),
+        container_type: form.containerType,
+        shipment_mode: form.shipmentMode || null,
+        incoterm: form.incoterm,
+        requested_date: form.requestedDate || null,
+        special_instructions: form.specialInstructions,
+      });
+      toast.success(`Réservation ${refNum} créée avec succès !`);
+      navigate('/client/orders');
+    } catch (err: any) {
+      toast.error(err.message || 'Erreur lors de la création');
+    }
   };
 
   return (
@@ -60,7 +63,6 @@ export default function NewBookingPage() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-2xl font-heading font-bold text-foreground mb-6">Nouvelle réservation</h1>
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Contact */}
           <section className="rounded-xl border border-border bg-card p-6">
             <h2 className="font-heading font-semibold text-card-foreground mb-4">Informations de contact</h2>
             <div className="grid md:grid-cols-2 gap-4">
@@ -71,7 +73,6 @@ export default function NewBookingPage() {
             </div>
           </section>
 
-          {/* Route */}
           <section className="rounded-xl border border-border bg-card p-6">
             <h2 className="font-heading font-semibold text-card-foreground mb-4">Itinéraire</h2>
             <div className="grid md:grid-cols-2 gap-4">
@@ -92,7 +93,6 @@ export default function NewBookingPage() {
             </div>
           </section>
 
-          {/* Cargo */}
           <section className="rounded-xl border border-border bg-card p-6">
             <h2 className="font-heading font-semibold text-card-foreground mb-4">Détails de la marchandise</h2>
             <div className="grid md:grid-cols-2 gap-4">
@@ -133,7 +133,9 @@ export default function NewBookingPage() {
 
           <div className="flex justify-end gap-3">
             <Button type="button" variant="outline" onClick={() => navigate('/client')}>Annuler</Button>
-            <Button type="submit" className="bg-accent text-accent-foreground hover:bg-accent/90">Soumettre la réservation</Button>
+            <Button type="submit" className="bg-accent text-accent-foreground hover:bg-accent/90" disabled={createBooking.isPending}>
+              {createBooking.isPending ? 'Soumission...' : 'Soumettre la réservation'}
+            </Button>
           </div>
         </form>
       </div>
