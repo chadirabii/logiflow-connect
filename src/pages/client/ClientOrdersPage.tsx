@@ -1,5 +1,5 @@
 import { useAuth } from '@/contexts/AuthContext';
-import { bookingRequests } from '@/data/mockData';
+import { useStore } from '@/contexts/StoreContext';
 import { ClientLayout } from '@/layouts/ClientLayout';
 import { StatusBadge } from '@/components/StatusBadge';
 import { useNavigate } from 'react-router-dom';
@@ -9,6 +9,7 @@ import { Search } from 'lucide-react';
 
 export default function ClientOrdersPage() {
   const { user } = useAuth();
+  const { bookingRequests } = useStore();
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const myBookings = bookingRequests
@@ -25,7 +26,6 @@ export default function ClientOrdersPage() {
             <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher..." className="pl-10" />
           </div>
         </div>
-
         <div className="rounded-xl border border-border bg-card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -55,9 +55,7 @@ export default function ClientOrdersPage() {
               </tbody>
             </table>
           </div>
-          {myBookings.length === 0 && (
-            <div className="p-8 text-center text-muted-foreground">Aucune commande trouvée.</div>
-          )}
+          {myBookings.length === 0 && <div className="p-8 text-center text-muted-foreground">Aucune commande trouvée.</div>}
         </div>
       </div>
     </ClientLayout>
