@@ -1,5 +1,5 @@
 import { AdminLayout } from '@/layouts/AdminLayout';
-import { documents as allDocs, users } from '@/data/mockData';
+import { useStore } from '@/contexts/StoreContext';
 import { FileText, Download, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,29 +10,18 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 export default function AdminDocumentsPage() {
+  const { documents, users } = useStore();
   const [search, setSearch] = useState('');
-  const docs = allDocs.filter(d => !search || d.name.toLowerCase().includes(search.toLowerCase()));
+  const docs = documents.filter(d => !search || d.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <AdminLayout>
       <div className="space-y-6">
         <h1 className="text-2xl font-heading font-bold text-foreground">Gestion des documents</h1>
-        <div className="relative w-72">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher..." className="pl-10" />
-        </div>
+        <div className="relative w-72"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher..." className="pl-10" /></div>
         <div className="rounded-xl border border-border bg-card overflow-hidden">
           <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border bg-muted/50">
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Document</th>
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Type</th>
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Client</th>
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Taille</th>
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Date</th>
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground"></th>
-              </tr>
-            </thead>
+            <thead><tr className="border-b border-border bg-muted/50"><th className="text-left px-4 py-3 font-medium text-muted-foreground">Document</th><th className="text-left px-4 py-3 font-medium text-muted-foreground">Type</th><th className="text-left px-4 py-3 font-medium text-muted-foreground">Client</th><th className="text-left px-4 py-3 font-medium text-muted-foreground">Taille</th><th className="text-left px-4 py-3 font-medium text-muted-foreground">Date</th><th className="text-left px-4 py-3 font-medium text-muted-foreground"></th></tr></thead>
             <tbody>
               {docs.map(d => {
                 const client = users.find(u => u.id === d.clientId);
