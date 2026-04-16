@@ -1,11 +1,13 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { users, type User, type UserRole } from '@/data/mockData';
+import { type User, type UserRole } from '@/data/mockData';
+import { useStore } from '@/contexts/StoreContext';
 
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => { success: boolean; error?: string };
   register: (data: { email: string; password: string; fullName: string; company?: string; phone?: string; rneFile?: string; patenteFile?: string }) => { success: boolean; error?: string };
   logout: () => void;
+  updateProfile: (data: Partial<User>) => void;
   isAuthenticated: boolean;
   isAdmin: boolean;
   isClient: boolean;
@@ -15,23 +17,24 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const store = useStore();
   const [user, setUser] = useState<User | null>(() => {
     const stored = localStorage.getItem('logistics_user');
     return stored ? JSON.parse(stored) : null;
   });
 
   const login = useCallback((email: string, password: string) => {
-    const found = users.find(u => u.email === email && u.password === password);
+    const found = store.users.find(u => u.email === email && u.password === password);
     if (found) {
       setUser(found);
       localStorage.setItem('logistics_user', JSON.stringify(found));
       return { success: true };
     }
     return { success: false, error: 'Email ou mot de passe incorrect' };
-  }, []);
+  }, [store.users]);
 
   const register = useCallback((data: { email: string; password: string; fullName: string; company?: string; phone?: string; rneFile?: string; patenteFile?: string }) => {
-    if (users.find(u => u.email === data.email)) {
+    if (store.users.find(u => u.email === data.email)) {
       return { success: false, error: 'Cet email est déjà utilisé' };
     }
     const newUser: User = {
@@ -46,11 +49,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       patenteFile: data.patenteFile,
       createdAt: new Date().toISOString().split('T')[0],
     };
-    users.push(newUser);
+    store.addUser(newUser);
     setUser(newUser);
     localStorage.setItem('logistics_user', JSON.stringify(newUser));
     return { success: true };
-  }, []);
+  }, [store]);
+
+  const updateProfile = useCallback((data: Partial<User>) => {
+    if (user) {
+      const updated = { ...user, ...data };
+      store.updateUser(user.id, data);
+      setUser(updated);
+      localStorage.setItem('logistics_user', JSON.stringify(updated));
+    }
+  }, [user, store]);
 
   const logout = useCallback(() => {
     setUser(null);
@@ -63,6 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       login,
       register,
       logout,
+      updateProfile,
       isAuthenticated: !!user,
       isAdmin: user?.role === 'admin',
       isClient: user?.role === 'client',
