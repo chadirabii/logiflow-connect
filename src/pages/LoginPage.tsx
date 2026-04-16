@@ -10,25 +10,26 @@ import { toast } from 'sonner';
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    const result = await login(email, password);
-    setIsLoading(false);
+    const result = login(email, password);
     if (result.success) {
       toast.success('Connexion réussie');
-      // Navigation will happen via auth state change
+      // Check user role from localStorage after login
+      const user = JSON.parse(localStorage.getItem('logistics_user') || '{}');
+      const redirectMap: Record<string, string> = { admin: '/admin', manager: '/manager', client: '/client' };
+      navigate(redirectMap[user.role] || '/client');
     } else {
-      toast.error(result.error || 'Erreur de connexion');
+      toast.error(result.error);
     }
   };
 
   return (
     <div className="min-h-screen flex">
+      {/* Left - Form */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <Link to="/" className="flex items-center gap-2 mb-8">
@@ -47,9 +48,7 @@ export default function LoginPage() {
               <Label htmlFor="password">Mot de passe</Label>
               <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" className="mt-1.5" required />
             </div>
-            <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isLoading}>
-              {isLoading ? 'Connexion...' : 'Se connecter'}
-            </Button>
+            <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">Se connecter</Button>
           </form>
 
           <p className="mt-6 text-sm text-center text-muted-foreground">
@@ -57,12 +56,15 @@ export default function LoginPage() {
           </p>
 
           <div className="mt-8 p-4 rounded-lg bg-muted border border-border">
-            <p className="text-xs font-medium text-muted-foreground mb-2">Pour tester, créez un compte via "S'inscrire" :</p>
-            <p className="text-xs text-muted-foreground">Les rôles admin/manager sont attribués dans la base de données.</p>
+            <p className="text-xs font-medium text-muted-foreground mb-2">Comptes de démonstration :</p>
+            <p className="text-xs text-muted-foreground"><strong>Admin :</strong> admin@247logistics.com / admin123</p>
+            <p className="text-xs text-muted-foreground"><strong>Manager :</strong> manager@247logistics.com / manager123</p>
+            <p className="text-xs text-muted-foreground"><strong>Client :</strong> karim@textilemarket.tn / client123</p>
           </div>
         </div>
       </div>
 
+      {/* Right - Visual */}
       <div className="hidden lg:flex flex-1 gradient-hero items-center justify-center p-12 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 right-20 w-96 h-96 rounded-full bg-accent blur-3xl" />

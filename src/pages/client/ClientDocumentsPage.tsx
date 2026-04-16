@@ -1,4 +1,5 @@
-import { useMyDocuments } from '@/hooks/useSupabaseData';
+import { useAuth } from '@/contexts/AuthContext';
+import { documents as allDocs } from '@/data/mockData';
 import { ClientLayout } from '@/layouts/ClientLayout';
 import { FileText, Download, Upload, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,9 +11,11 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 export default function ClientDocumentsPage() {
+  const { user } = useAuth();
   const [search, setSearch] = useState('');
-  const { data: myDocs = [] } = useMyDocuments();
-  const filtered = myDocs.filter(d => !search || d.name.toLowerCase().includes(search.toLowerCase()));
+  const myDocs = allDocs
+    .filter(d => d.clientId === user?.id)
+    .filter(d => !search || d.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <ClientLayout>
@@ -39,18 +42,18 @@ export default function ClientDocumentsPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map(d => (
+              {myDocs.map(d => (
                 <tr key={d.id} className="border-b border-border hover:bg-muted/30 transition-colors">
                   <td className="px-4 py-3 flex items-center gap-2"><FileText className="h-4 w-4 text-accent" /><span className="font-medium text-card-foreground">{d.name}</span></td>
-                  <td className="px-4 py-3"><span className="bg-muted px-2 py-0.5 rounded text-xs text-muted-foreground">{TYPE_LABELS[d.type] || d.type}</span></td>
+                  <td className="px-4 py-3"><span className="bg-muted px-2 py-0.5 rounded text-xs text-muted-foreground">{TYPE_LABELS[d.type]}</span></td>
                   <td className="px-4 py-3 text-muted-foreground">{d.size}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{new Date(d.created_at).toLocaleDateString('fr-FR')}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{d.createdAt}</td>
                   <td className="px-4 py-3"><Button variant="ghost" size="sm"><Download className="h-4 w-4" /></Button></td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {filtered.length === 0 && <div className="p-8 text-center text-muted-foreground">Aucun document.</div>}
+          {myDocs.length === 0 && <div className="p-8 text-center text-muted-foreground">Aucun document.</div>}
         </div>
       </div>
     </ClientLayout>

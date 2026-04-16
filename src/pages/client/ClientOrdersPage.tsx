@@ -1,5 +1,5 @@
 import { useAuth } from '@/contexts/AuthContext';
-import { useMyBookings } from '@/hooks/useSupabaseData';
+import { bookingRequests } from '@/data/mockData';
 import { ClientLayout } from '@/layouts/ClientLayout';
 import { StatusBadge } from '@/components/StatusBadge';
 import { useNavigate } from 'react-router-dom';
@@ -8,13 +8,12 @@ import { useState } from 'react';
 import { Search } from 'lucide-react';
 
 export default function ClientOrdersPage() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
-  const { data: myBookings = [] } = useMyBookings();
-
-  const filtered = myBookings.filter(b =>
-    !search || b.reference_number.toLowerCase().includes(search.toLowerCase()) || b.cargo_type.toLowerCase().includes(search.toLowerCase())
-  );
+  const myBookings = bookingRequests
+    .filter(b => b.clientId === user?.id)
+    .filter(b => !search || b.referenceNumber.toLowerCase().includes(search.toLowerCase()) || b.cargoType.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <ClientLayout>
@@ -42,21 +41,21 @@ export default function ClientOrdersPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map(b => (
+                {myBookings.map(b => (
                   <tr key={b.id} className="border-b border-border hover:bg-muted/30 cursor-pointer transition-colors" onClick={() => navigate(`/client/orders/${b.id}`)}>
-                    <td className="px-4 py-3 font-medium text-card-foreground">{b.reference_number}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{b.origin_port}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{b.destination_port}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{b.cargo_type}</td>
-                    <td className="px-4 py-3"><span className="bg-muted px-2 py-0.5 rounded text-xs font-medium text-muted-foreground">{b.shipment_mode}</span></td>
+                    <td className="px-4 py-3 font-medium text-card-foreground">{b.referenceNumber}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{b.originPort}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{b.destinationPort}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{b.cargoType}</td>
+                    <td className="px-4 py-3"><span className="bg-muted px-2 py-0.5 rounded text-xs font-medium text-muted-foreground">{b.shipmentMode}</span></td>
                     <td className="px-4 py-3"><StatusBadge status={b.status} /></td>
-                    <td className="px-4 py-3 text-muted-foreground">{new Date(b.created_at).toLocaleDateString('fr-FR')}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{b.createdAt}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          {filtered.length === 0 && (
+          {myBookings.length === 0 && (
             <div className="p-8 text-center text-muted-foreground">Aucune commande trouvée.</div>
           )}
         </div>
