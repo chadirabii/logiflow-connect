@@ -21,6 +21,8 @@ npm install
 npm run dev
 ```
 
+`npm run dev` lance maintenant le frontend Vite + le serveur mail Node.js en parallèle.
+
 ## Données Supabase utilisées
 
 Le frontend lit/écrit directement dans ces tables :
@@ -67,16 +69,16 @@ VITE_MAIL_API_URL="http://localhost:4000"
 # VITE_MAIL_API_KEY="choose-a-strong-random-key"
 ```
 
-2. Lancer le serveur mail:
-
-```bash
-npm run mail:dev
-```
-
-3. Lancer le frontend:
+2. Lancer toute l'application (frontend + serveur mail) avec une seule commande:
 
 ```bash
 npm run dev
+```
+
+3. Optionnel: lancer séparément uniquement le serveur mail:
+
+```bash
+npm run mail:dev
 ```
 
 Endpoints disponibles:

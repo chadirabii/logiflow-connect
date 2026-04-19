@@ -360,7 +360,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         const responseData = await response
           .json()
           .catch(() => ({ error: "Unknown notification create error" }));
-        throw new Error(getErrorMessage(responseData.error) || "Failed to create notifications");
+        throw new Error(
+          getErrorMessage(responseData.error) ||
+            "Failed to create notifications",
+        );
       }
     },
     [],

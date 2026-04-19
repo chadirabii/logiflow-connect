@@ -139,7 +139,9 @@ const getRoleUserIds = async (roles = []) => {
     throw new Error(rolesResult.error.message);
   }
 
-  return Array.from(new Set((rolesResult.data ?? []).map((entry) => entry.user_id)));
+  return Array.from(
+    new Set((rolesResult.data ?? []).map((entry) => entry.user_id)),
+  );
 };
 
 const resolveEmailsFromRecipientIds = async (recipientIds = []) => {
@@ -313,15 +315,8 @@ app.post("/notifications/create", ensureAuthorized, async (req, res) => {
     return;
   }
 
-  const {
-    recipientIds,
-    roles,
-    type,
-    title,
-    description,
-    icon,
-    actionUrl,
-  } = req.body || {};
+  const { recipientIds, roles, type, title, description, icon, actionUrl } =
+    req.body || {};
 
   if (typeof title !== "string" || title.trim().length === 0) {
     res.status(400).json({ error: "`title` is required" });
@@ -329,7 +324,9 @@ app.post("/notifications/create", ensureAuthorized, async (req, res) => {
   }
 
   const directRecipientIds = Array.isArray(recipientIds) ? recipientIds : [];
-  const roleRecipientIds = Array.isArray(roles) ? await getRoleUserIds(roles) : [];
+  const roleRecipientIds = Array.isArray(roles)
+    ? await getRoleUserIds(roles)
+    : [];
 
   const targetUserIds = Array.from(
     new Set(
