@@ -239,6 +239,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const notifyOfflineClientsByEmail = useCallback(
     async ({
       recipientIds,
+      roles,
       includeAdmins = true,
       title,
       description,
@@ -246,6 +247,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       type,
     }: {
       recipientIds: string[];
+      roles?: string[];
       includeAdmins?: boolean;
       title: string;
       description: string;
@@ -277,6 +279,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           },
           body: JSON.stringify({
             recipientIds: uniqueRecipientIds,
+            roles: roles ?? [],
             includeAdmins,
             title,
             description,
@@ -1397,66 +1400,65 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         (conversation) => conversation.id === msg.conversationId,
       );
 
-      const recipientIds = new Set<string>();
+      const receiverDescription = `${msg.senderName} vous a envoyé un message.`;
+
       if (msg.senderRole === "client") {
-        users
-          .filter((candidate) => ["admin", "manager"].includes(candidate.role))
-          .forEach((candidate) => recipientIds.add(candidate.id));
-      } else if (currentConversation?.clientId) {
-        recipientIds.add(currentConversation.clientId);
-      }
-
-      recipientIds.delete(msg.senderId);
-
-      if (recipientIds.size > 0) {
-        const notificationRows = Array.from(recipientIds).map((recipientId) => {
-          const recipient = users.find(
-            (candidate) => candidate.id === recipientId,
-          );
-          const actionUrl =
-            recipient?.role === "admin"
-              ? "/admin/chat"
-              : recipient?.role === "manager"
-                ? "/manager/chat"
-                : "/client/chat";
-
-          return {
-            user_id: recipientId,
-            type: "message" as NotificationType,
-            title: "Nouveau message",
-            description: `${msg.senderName} vous a envoyé un message.`,
-            read: false,
+        await Promise.all([
+          createInAppNotificationsServerSide({
+            roles: ["admin"],
+            type: "message",
+            title: "Nouveau message client",
+            description: receiverDescription,
             icon: "message",
-            action_url: actionUrl,
-            created_at: msg.createdAt,
-          };
+            actionUrl: "/admin/chat",
+          }),
+          createInAppNotificationsServerSide({
+            roles: ["manager"],
+            type: "message",
+            title: "Nouveau message client",
+            description: receiverDescription,
+            icon: "message",
+            actionUrl: "/manager/chat",
+          }),
+        ]);
+
+        void notifyOfflineClientsByEmail({
+          recipientIds: [],
+          roles: ["admin", "manager"],
+          includeAdmins: false,
+          type: "message",
+          title: "Nouveau message client",
+          description: receiverDescription,
+          actionUrl: "/admin/chat",
+        });
+      } else if (currentConversation?.clientId) {
+        await createInAppNotificationsServerSide({
+          recipientIds: [currentConversation.clientId],
+          type: "message",
+          title: "Nouveau message",
+          description: receiverDescription,
+          icon: "message",
+          actionUrl: "/client/chat",
         });
 
-        const notificationInsert = await supabase
-          .from("notifications")
-          .insert(notificationRows)
-          .select("*");
-
-        if (!notificationInsert.error) {
-          setNotifications((prev) => [
-            ...notificationInsert.data.map(toNotification),
-            ...prev,
-          ]);
-
-          void notifyOfflineClientsByEmail({
-            recipientIds: Array.from(recipientIds),
-            type: "message",
-            title: "Nouveau message",
-            description: `${msg.senderName} vous a envoyé un message.`,
-            actionUrl: "/client/chat",
-          });
-        }
+        void notifyOfflineClientsByEmail({
+          recipientIds: [currentConversation.clientId],
+          includeAdmins: false,
+          type: "message",
+          title: "Nouveau message",
+          description: receiverDescription,
+          actionUrl: "/client/chat",
+        });
       }
 
       setMessages((prev) => [...prev, msg]);
       return { success: true };
     },
-    [conversations, notifyOfflineClientsByEmail, users],
+    [
+      conversations,
+      createInAppNotificationsServerSide,
+      notifyOfflineClientsByEmail,
+    ],
   );
 
   const updateConversation = useCallback(

@@ -237,6 +237,7 @@ app.post("/notifications/email", ensureAuthorized, async (req, res) => {
   const {
     to,
     recipientIds,
+    roles,
     includeAdmins,
     subject,
     title,
@@ -252,9 +253,12 @@ app.post("/notifications/email", ensureAuthorized, async (req, res) => {
   if (!recipients.length && (Array.isArray(recipientIds) || includeAdmins)) {
     try {
       const baseRecipientIds = Array.isArray(recipientIds) ? recipientIds : [];
+      const roleRecipientIds = Array.isArray(roles)
+        ? await getRoleUserIds(roles)
+        : [];
       const adminRecipientIds = includeAdmins ? await getAdminUserIds() : [];
       const resolvedRecipientIds = Array.from(
-        new Set([...baseRecipientIds, ...adminRecipientIds]),
+        new Set([...baseRecipientIds, ...roleRecipientIds, ...adminRecipientIds]),
       );
       recipients = await resolveEmailsFromRecipientIds(resolvedRecipientIds);
     } catch (error) {
