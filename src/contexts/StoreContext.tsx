@@ -235,10 +235,22 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const emailNotificationsEnabledRef = useRef(true);
   const presenceHeartbeatEnabledRef = useRef(true);
+  const emailDebugEnabled =
+    String(import.meta.env.VITE_EMAIL_DEBUG || "true").toLowerCase() === "true";
+
+  const logEmailDebug = useCallback(
+    (...args: unknown[]) => {
+      if (emailDebugEnabled) {
+        console.log("[EmailDebug]", ...args);
+      }
+    },
+    [emailDebugEnabled],
+  );
 
   const notifyOfflineClientsByEmail = useCallback(
     async ({
       recipientIds,
+      toEmails,
       roles,
       includeAdmins = true,
       title,
@@ -247,6 +259,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       type,
     }: {
       recipientIds: string[];
+      toEmails?: string[];
       roles?: string[];
       includeAdmins?: boolean;
       title: string;
@@ -261,8 +274,23 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       const uniqueRecipientIds = Array.from(
         new Set(recipientIds.filter((recipientId) => Boolean(recipientId))),
       );
+      const uniqueToEmails = Array.from(
+        new Set(
+          (toEmails ?? [])
+            .filter((email) => typeof email === "string")
+            .map((email) => email.trim())
+            .filter((email) => email.length > 0),
+        ),
+      );
 
-      if (uniqueRecipientIds.length === 0 && !includeAdmins) {
+      const hasRoleTargets = Array.isArray(roles) && roles.length > 0;
+
+      if (
+        uniqueRecipientIds.length === 0 &&
+        uniqueToEmails.length === 0 &&
+        !includeAdmins &&
+        !hasRoleTargets
+      ) {
         return;
       }
 
@@ -271,6 +299,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           import.meta.env.VITE_MAIL_API_URL || "http://localhost:4000";
         const mailApiKey = import.meta.env.VITE_MAIL_API_KEY;
 
+        logEmailDebug("notifyOfflineClientsByEmail:request", {
+          recipientIds: uniqueRecipientIds,
+          toEmails: uniqueToEmails,
+          roles,
+          includeAdmins,
+          type,
+          title,
+          actionUrl,
+        });
+
         const response = await fetch(`${mailApiUrl}/notifications/email`, {
           method: "POST",
           headers: {
@@ -278,6 +316,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
             ...(mailApiKey ? { "X-Api-Key": mailApiKey } : {}),
           },
           body: JSON.stringify({
+            to: uniqueToEmails,
             recipientIds: uniqueRecipientIds,
             roles: roles ?? [],
             includeAdmins,
@@ -292,6 +331,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           const responseData = await response
             .json()
             .catch(() => ({ error: "Unknown mail server error" }));
+          logEmailDebug("notifyOfflineClientsByEmail:error", {
+            status: response.status,
+            responseData,
+          });
           const message = getErrorMessage(responseData.error).toLowerCase();
           const shouldDisableTemporarily =
             message.includes("failed to send") ||
@@ -308,8 +351,12 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           }
 
           console.error("Failed to send notification emails:", responseData);
+        } else {
+          const responseData = await response.json().catch(() => ({}));
+          logEmailDebug("notifyOfflineClientsByEmail:success", responseData);
         }
       } catch (error) {
+        logEmailDebug("notifyOfflineClientsByEmail:exception", error);
         emailNotificationsEnabledRef.current = false;
         console.warn(
           "Email notifications disabled for this session due to mail API request failure.",
@@ -1401,54 +1448,82 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       );
 
       const receiverDescription = `${msg.senderName} vous a envoyé un message.`;
+      logEmailDebug("addMessage:receiverContext", {
+        senderRole: msg.senderRole,
+        conversationId: msg.conversationId,
+        receiverClientId: currentConversation?.clientId,
+      });
 
-      if (msg.senderRole === "client") {
-        await Promise.all([
-          createInAppNotificationsServerSide({
-            roles: ["admin"],
+      try {
+        if (msg.senderRole === "client") {
+          await Promise.all([
+            createInAppNotificationsServerSide({
+              roles: ["admin"],
+              type: "message",
+              title: "Nouveau message client",
+              description: receiverDescription,
+              icon: "message",
+              actionUrl: "/admin/chat",
+            }),
+            createInAppNotificationsServerSide({
+              roles: ["manager"],
+              type: "message",
+              title: "Nouveau message client",
+              description: receiverDescription,
+              icon: "message",
+              actionUrl: "/manager/chat",
+            }),
+          ]);
+
+          void notifyOfflineClientsByEmail({
+            recipientIds: [],
+            roles: ["admin", "manager"],
+            includeAdmins: false,
             type: "message",
             title: "Nouveau message client",
             description: receiverDescription,
-            icon: "message",
             actionUrl: "/admin/chat",
-          }),
-          createInAppNotificationsServerSide({
-            roles: ["manager"],
+          });
+        } else if (currentConversation?.clientId) {
+          const receiverEmail = users.find(
+            (candidate) => candidate.id === currentConversation.clientId,
+          )?.email;
+          const directReceiverEmails =
+            receiverEmail && !receiverEmail.endsWith("@user.local")
+              ? [receiverEmail]
+              : [];
+
+          logEmailDebug("addMessage:adminToClient", {
+            receiverClientId: currentConversation.clientId,
+            receiverEmail,
+            directReceiverEmails,
+          });
+
+          await createInAppNotificationsServerSide({
+            recipientIds: [currentConversation.clientId],
             type: "message",
-            title: "Nouveau message client",
+            title: "Nouveau message",
             description: receiverDescription,
             icon: "message",
-            actionUrl: "/manager/chat",
-          }),
-        ]);
+            actionUrl: "/client/chat",
+          });
 
-        void notifyOfflineClientsByEmail({
-          recipientIds: [],
-          roles: ["admin", "manager"],
-          includeAdmins: false,
-          type: "message",
-          title: "Nouveau message client",
-          description: receiverDescription,
-          actionUrl: "/admin/chat",
-        });
-      } else if (currentConversation?.clientId) {
-        await createInAppNotificationsServerSide({
-          recipientIds: [currentConversation.clientId],
-          type: "message",
-          title: "Nouveau message",
-          description: receiverDescription,
-          icon: "message",
-          actionUrl: "/client/chat",
-        });
-
-        void notifyOfflineClientsByEmail({
-          recipientIds: [currentConversation.clientId],
-          includeAdmins: false,
-          type: "message",
-          title: "Nouveau message",
-          description: receiverDescription,
-          actionUrl: "/client/chat",
-        });
+          void notifyOfflineClientsByEmail({
+            toEmails: directReceiverEmails,
+            recipientIds: [currentConversation.clientId],
+            includeAdmins: false,
+            type: "message",
+            title: "Nouveau message",
+            description: receiverDescription,
+            actionUrl: "/client/chat",
+          });
+        }
+      } catch (notificationError) {
+        logEmailDebug("addMessage:dispatchError", notificationError);
+        console.error(
+          "Failed to dispatch message notifications/email:",
+          notificationError,
+        );
       }
 
       setMessages((prev) => [...prev, msg]);
@@ -1457,7 +1532,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     [
       conversations,
       createInAppNotificationsServerSide,
+      logEmailDebug,
       notifyOfflineClientsByEmail,
+      users,
     ],
   );
 

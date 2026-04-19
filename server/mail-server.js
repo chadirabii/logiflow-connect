@@ -12,6 +12,14 @@ const port = Number(process.env.MAIL_SERVER_PORT || 4000);
 const allowedOrigin = process.env.MAIL_CORS_ORIGIN || "*";
 const mailApiKey = process.env.MAIL_API_KEY || "";
 const appName = process.env.MAIL_APP_NAME || "24/7 Logistics";
+const emailDebugEnabled =
+  String(process.env.MAIL_DEBUG || "true").toLowerCase() === "true";
+
+const logEmailDebug = (...args) => {
+  if (emailDebugEnabled) {
+    console.log("[MailServerDebug]", ...args);
+  }
+};
 
 const smtpHost =
   process.env.SMTP_HOST || process.env["spring.mail.host"] || "smtp.gmail.com";
@@ -168,6 +176,21 @@ const resolveEmailsFromRecipientIds = async (recipientIds = []) => {
 
     if (recipientEmail) {
       resolvedEmails.push(recipientEmail);
+      continue;
+    }
+
+    const bookingEmailResult = await supabaseAdmin
+      .from("bookings")
+      .select("email")
+      .eq("client_id", recipientId)
+      .not("email", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const bookingEmail = bookingEmailResult.data?.email;
+    if (typeof bookingEmail === "string" && bookingEmail.trim().length > 0) {
+      resolvedEmails.push(bookingEmail);
     }
   }
 
@@ -250,6 +273,16 @@ app.post("/notifications/email", ensureAuthorized, async (req, res) => {
 
   let recipients = normalizeEmails(Array.isArray(to) ? to : [to]);
 
+  logEmailDebug("/notifications/email:request", {
+    to,
+    recipientIds,
+    roles,
+    includeAdmins,
+    type,
+    title,
+    actionUrl,
+  });
+
   if (!recipients.length && (Array.isArray(recipientIds) || includeAdmins)) {
     try {
       const baseRecipientIds = Array.isArray(recipientIds) ? recipientIds : [];
@@ -258,10 +291,22 @@ app.post("/notifications/email", ensureAuthorized, async (req, res) => {
         : [];
       const adminRecipientIds = includeAdmins ? await getAdminUserIds() : [];
       const resolvedRecipientIds = Array.from(
-        new Set([...baseRecipientIds, ...roleRecipientIds, ...adminRecipientIds]),
+        new Set([
+          ...baseRecipientIds,
+          ...roleRecipientIds,
+          ...adminRecipientIds,
+        ]),
       );
       recipients = await resolveEmailsFromRecipientIds(resolvedRecipientIds);
+      logEmailDebug("/notifications/email:resolved", {
+        baseRecipientIds,
+        roleRecipientIds,
+        adminRecipientIds,
+        resolvedRecipientIds,
+        recipients,
+      });
     } catch (error) {
+      logEmailDebug("/notifications/email:resolveError", error);
       res.status(500).json({
         error:
           error instanceof Error
@@ -303,7 +348,14 @@ app.post("/notifications/email", ensureAuthorized, async (req, res) => {
       accepted: result.accepted,
       rejected: result.rejected,
     });
+    logEmailDebug("/notifications/email:sent", {
+      recipients,
+      messageId: result.messageId,
+      accepted: result.accepted,
+      rejected: result.rejected,
+    });
   } catch (error) {
+    logEmailDebug("/notifications/email:sendError", error);
     res.status(500).json({
       error: error instanceof Error ? error.message : "Failed to send email",
     });
