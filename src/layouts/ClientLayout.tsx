@@ -16,8 +16,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { conversations } from "@/data/mockData";
 import { NotificationPanel } from "@/components/NotificationPanel";
+import { useStore } from "@/contexts/StoreContext";
 
 const clientNav = [
   { label: "Tableau de bord", icon: LayoutDashboard, path: "/client" },
@@ -32,6 +32,7 @@ const clientNav = [
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
+  const { conversations } = useStore();
   const location = useLocation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
@@ -104,8 +105,8 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
             )}
           </button>
           <button
-            onClick={() => {
-              logout();
+            onClick={async () => {
+              await logout();
               navigate("/");
             }}
             className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-sidebar-accent/50 w-full text-sidebar-foreground"

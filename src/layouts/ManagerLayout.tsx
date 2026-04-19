@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
   MessageSquare,
+  Ship,
   History,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -16,9 +17,14 @@ import { NotificationPanel } from "@/components/NotificationPanel";
 
 const managerNav = [
   { label: "Tableau de bord", icon: LayoutDashboard, path: "/manager" },
+  { label: "Expéditions", icon: Ship, path: "/manager/shipments" },
   { label: "Réclamations", icon: AlertTriangle, path: "/manager/reclamations" },
   { label: "Messagerie", icon: MessageSquare, path: "/manager/chat" },
-  { label: "Commandes Historiques", icon: History, path: "/manager/legacy-orders" },
+  {
+    label: "Commandes Historiques",
+    icon: History,
+    path: "/manager/legacy-orders",
+  },
   { label: "Statistiques", icon: BarChart3, path: "/manager/stats" },
 ];
 
@@ -90,8 +96,8 @@ export function ManagerLayout({ children }: { children: React.ReactNode }) {
             )}
           </button>
           <button
-            onClick={() => {
-              logout();
+            onClick={async () => {
+              await logout();
               navigate("/");
             }}
             className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-sidebar-accent/50 w-full"

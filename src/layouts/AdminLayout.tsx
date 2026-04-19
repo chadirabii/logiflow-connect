@@ -16,8 +16,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { conversations } from "@/data/mockData";
 import { NotificationPanel } from "@/components/NotificationPanel";
+import { useStore } from "@/contexts/StoreContext";
 
 const adminNav = [
   { label: "Tableau de bord", icon: LayoutDashboard, path: "/admin" },
@@ -26,12 +26,17 @@ const adminNav = [
   { label: "Clients", icon: Users, path: "/admin/clients" },
   { label: "Documents", icon: FileText, path: "/admin/documents" },
   { label: "Réclamations", icon: AlertTriangle, path: "/admin/reclamations" },
-  { label: "Commandes Historiques", icon: History, path: "/admin/legacy-orders" },
+  {
+    label: "Commandes Historiques",
+    icon: History,
+    path: "/admin/legacy-orders",
+  },
   { label: "Messagerie", icon: MessageSquare, path: "/admin/chat" },
 ];
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
+  const { conversations } = useStore();
   const location = useLocation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
@@ -105,8 +110,8 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             )}
           </button>
           <button
-            onClick={() => {
-              logout();
+            onClick={async () => {
+              await logout();
               navigate("/");
             }}
             className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-sidebar-accent/50 w-full"

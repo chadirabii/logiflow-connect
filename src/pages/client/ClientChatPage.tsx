@@ -1,69 +1,138 @@
-import { useAuth } from '@/contexts/AuthContext';
-import { useStore } from '@/contexts/StoreContext';
-import { ClientLayout } from '@/layouts/ClientLayout';
-import { useState, useRef, useEffect } from 'react';
-import { Send, Paperclip } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
-import type { Message } from '@/data/mockData';
+import { useAuth } from "@/contexts/AuthContext";
+import { useStore } from "@/contexts/StoreContext";
+import { ClientLayout } from "@/layouts/ClientLayout";
+import { useState, useRef, useEffect } from "react";
+import { Send, Paperclip } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import type { Message } from "@/data/mockData";
+import { toast } from "sonner";
 
 export default function ClientChatPage() {
   const { user } = useAuth();
   const { conversations, messages, addMessage, addConversation } = useStore();
-  const myConvo = conversations.find(c => c.clientId === user?.id);
-  const myMsgs = myConvo ? messages.filter(m => m.conversationId === myConvo.id) : [];
-  const [input, setInput] = useState('');
+  const myConvo = conversations.find((c) => c.clientId === user?.id);
+  const myMsgs = myConvo
+    ? messages.filter((m) => m.conversationId === myConvo.id)
+    : [];
+  const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [myMsgs]);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [myMsgs]);
 
-  const sendMessage = () => {
-    if (!input.trim()) return;
+  const sendMessage = async () => {
+    if (!input.trim() || !user) return;
     let convoId = myConvo?.id;
     if (!convoId) {
       convoId = `conv${Date.now()}`;
-      addConversation({ id: convoId, clientId: user!.id, clientName: user!.fullName, lastMessage: input, lastMessageAt: new Date().toISOString(), unreadCount: 0 });
+      const convoResult = await addConversation({
+        id: convoId,
+        clientId: user.id,
+        clientName: user.fullName,
+        lastMessage: input,
+        lastMessageAt: new Date().toISOString(),
+        unreadCount: 0,
+      });
+      if (!convoResult.success) {
+        toast.error(
+          convoResult.error || "Erreur lors de la création de la conversation",
+        );
+        return;
+      }
     }
-    const newMsg: Message = { id: `m${Date.now()}`, conversationId: convoId, senderId: user!.id, senderName: user!.fullName, senderRole: 'client', content: input, read: false, createdAt: new Date().toISOString() };
-    addMessage(newMsg);
-    setInput('');
-
-    setTimeout(() => {
-      const reply: Message = { id: `m${Date.now() + 1}`, conversationId: convoId!, senderId: 'u1', senderName: 'Mohamed Ben Ali', senderRole: 'admin', content: 'Merci pour votre message. Nous allons vous répondre dans les plus brefs délais.', read: false, createdAt: new Date().toISOString() };
-      addMessage(reply);
-    }, 2000);
+    const newMsg: Message = {
+      id: `m${Date.now()}`,
+      conversationId: convoId,
+      senderId: user.id,
+      senderName: user.fullName,
+      senderRole: "client",
+      content: input,
+      read: false,
+      createdAt: new Date().toISOString(),
+    };
+    const sendResult = await addMessage(newMsg);
+    if (!sendResult.success) {
+      toast.error(sendResult.error || "Erreur lors de l'envoi du message");
+      return;
+    }
+    setInput("");
   };
 
-  const allMsgs = myConvo ? messages.filter(m => m.conversationId === myConvo.id) : [];
+  const allMsgs = myConvo
+    ? messages.filter((m) => m.conversationId === myConvo.id)
+    : [];
 
   return (
     <ClientLayout>
       <div className="flex flex-col h-[calc(100vh-130px)]">
         <div className="flex items-center justify-between mb-4">
-          <div><h1 className="text-xl font-heading font-bold text-foreground">Messagerie</h1><p className="text-sm text-muted-foreground">Discussion avec l'équipe 24/7 Logistics</p></div>
+          <div>
+            <h1 className="text-xl font-heading font-bold text-foreground">
+              Messagerie
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Discussion avec l'équipe 24/7 Logistics
+            </p>
+          </div>
         </div>
         <div className="flex-1 overflow-y-auto rounded-xl border border-border bg-card p-4 space-y-4">
-          {allMsgs.map(m => {
+          {allMsgs.map((m) => {
             const isMine = m.senderId === user?.id;
             const date = new Date(m.createdAt);
             return (
-              <div key={m.id} className={cn('flex', isMine ? 'justify-end' : 'justify-start')}>
-                <div className={cn('max-w-[70%] rounded-2xl px-4 py-2.5', isMine ? 'bg-accent text-accent-foreground rounded-br-md' : 'bg-muted text-card-foreground rounded-bl-md')}>
-                  <p className="text-xs font-medium opacity-70 mb-1">{m.senderName}</p>
+              <div
+                key={m.id}
+                className={cn("flex", isMine ? "justify-end" : "justify-start")}
+              >
+                <div
+                  className={cn(
+                    "max-w-[70%] rounded-2xl px-4 py-2.5",
+                    isMine
+                      ? "bg-accent text-accent-foreground rounded-br-md"
+                      : "bg-muted text-card-foreground rounded-bl-md",
+                  )}
+                >
+                  <p className="text-xs font-medium opacity-70 mb-1">
+                    {m.senderName}
+                  </p>
                   <p className="text-sm">{m.content}</p>
-                  <p className="text-[10px] opacity-50 mt-1">{date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</p>
+                  <p className="text-[10px] opacity-50 mt-1">
+                    {date.toLocaleTimeString("fr-FR", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
                 </div>
               </div>
             );
           })}
           <div ref={bottomRef} />
-          {!myConvo && allMsgs.length === 0 && <p className="text-center text-muted-foreground">Aucune conversation. Envoyez votre premier message !</p>}
+          {!myConvo && allMsgs.length === 0 && (
+            <p className="text-center text-muted-foreground">
+              Aucune conversation. Envoyez votre premier message !
+            </p>
+          )}
         </div>
         <div className="flex gap-3 mt-4">
-          <Button variant="outline" size="icon"><Paperclip className="h-4 w-4" /></Button>
-          <Input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && sendMessage()} placeholder="Écrire un message..." className="flex-1" />
-          <Button onClick={sendMessage} className="bg-accent text-accent-foreground hover:bg-accent/90"><Send className="h-4 w-4" /></Button>
+          <Button variant="outline" size="icon">
+            <Paperclip className="h-4 w-4" />
+          </Button>
+          <Input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            placeholder="Écrire un message..."
+            className="flex-1"
+          />
+          <Button
+            onClick={sendMessage}
+            className="bg-accent text-accent-foreground hover:bg-accent/90"
+          >
+            <Send className="h-4 w-4" />
+          </Button>
         </div>
       </div>
     </ClientLayout>

@@ -1,1 +1,4 @@
-project_id = "shzuwmndhjucwlckuvrn"
+project_id = "vwjiznhfjjsfhzqyxdqs"
+
+[functions.send-client-email-notification]
+verify_jwt = false

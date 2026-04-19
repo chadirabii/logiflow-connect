@@ -254,6 +254,7 @@ export type Database = {
           created_at: string
           full_name: string
           id: string
+          last_seen_at: string
           patente_file: string | null
           phone: string | null
           rne_file: string | null
@@ -266,6 +267,7 @@ export type Database = {
           created_at?: string
           full_name: string
           id?: string
+          last_seen_at?: string
           patente_file?: string | null
           phone?: string | null
           rne_file?: string | null
@@ -278,6 +280,7 @@ export type Database = {
           created_at?: string
           full_name?: string
           id?: string
+          last_seen_at?: string
           patente_file?: string | null
           phone?: string | null
           rne_file?: string | null
